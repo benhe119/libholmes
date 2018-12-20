@@ -1,0 +1,34 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.libholmes</groupId>
+  <artifactId>libholmes</artifactId>
+  <version>0.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <name>libholmes</name>
+  <description>A library for the forensic analysis of files and network traffic</description>
+  <url>http://www.libholmes.org/</url>
+  <inceptionYear>2018</inceptionYear>
+  <licenses>
+   <license>
+    <name>GNU General Public License, Version 3</name>
+    <url>https://www.gnu.org/licenses/gpl-3.0-standalone.html</url>
+    <distribution>repo</distribution>
+   </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>gdshaw</id>
+      <name>Graham Shaw</name>
+      <email>gdshaw@riscpkg.org</email>
+      <url>http://gdshaw.net/</url>
+      <roles>
+        <role>maintainer</role>
+        <role>developer</role>
+      </roles>
+    </developer>
+  </developers>
+</project>
