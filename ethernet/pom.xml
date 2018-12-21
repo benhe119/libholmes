@@ -1,0 +1,22 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.libholmes</groupId>
+    <artifactId>libholmes</artifactId>
+    <version>0.0.0-SNAPSHOT</version>
+  </parent>
+  <groupId>org.libholmes</groupId>
+  <artifactId>libholmes-ethernet</artifactId>
+  <version>0.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>org.libholmes</groupId>
+      <artifactId>libholmes-core</artifactId>
+      <version>0.0.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+  <name>libholmes-ethernet</name>
+  <description>Ethernet protocol support for libholmes</description>
+</project>
