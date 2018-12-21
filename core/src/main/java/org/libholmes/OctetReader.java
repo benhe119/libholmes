@@ -110,6 +110,24 @@ public abstract class OctetReader implements Cloneable {
         return result;
     }
 
+    /** Read a given-length OctetString from the octet stream.
+     * The exact type of the result is unspecified, and may vary depending
+     * on both the type of the originating OctetReader, and the content to
+     * be placed within it.
+     * @param count the number of octets to be read
+     * @return the resulting OctetString
+     */
+    public OctetString readOctetString(int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("octet count is negative");
+        }
+        byte[] result = new byte[count];
+        for (int i = 0; i != count; ++i) {
+            result[i] = readByte();
+        }
+        return new ArrayOctetString(result, byteOrder);
+    }
+
     /** Peek ahead to an 8-bit byte in the octet stream.
      * @param offset the offset in octets from the current position
      * @return the byte that was read
@@ -187,6 +205,33 @@ public abstract class OctetReader implements Cloneable {
             result[i] = peekByte(offset + i);
         }
         return result;
+    }
+
+    /** Peek ahead to a given-length OctetString in the octet stream.
+     * The exact type of the result is unspecified, and may vary depending
+     * on both the type of the originating OctetReader, and the content to
+     * be placed within it.
+     * @param offset the offset in octets from the current position
+     * @param count the number of octets to be read
+     * @return the resulting OctetString
+     */
+    public OctetString peekOctetString(int offset, int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("octet count is negative");
+        }
+        if (offset < 0) {
+            throw new IndexOutOfBoundsException(
+                "negative offset into octet stream");
+        }
+        if (offset > remaining() - count) {
+            throw new IndexOutOfBoundsException(
+                "peek beyond end of octet stream");
+        }
+        byte[] result = new byte[count];
+        for (int i = 0; i != count; ++i) {
+            result[i] = peekByte(offset + i);
+        }
+        return new ArrayOctetString(result, byteOrder);
     }
 
     /** Skip the given number of octets.

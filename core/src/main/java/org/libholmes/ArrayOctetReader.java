@@ -145,6 +145,22 @@ public class ArrayOctetReader extends OctetReader {
     }
 
     @Override
+    public OctetString readOctetString(int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("octet count is negative");
+        }
+        if (rem < count) {
+            throw new IndexOutOfBoundsException(
+                "read beyond end of octet stream");
+        }
+        OctetString result = new ArrayOctetString(content, index, count,
+            getByteOrder());
+        index += count;
+        rem -= count;
+        return result;
+    }
+
+    @Override
     public byte peekByte(int offset) {
         if (offset < 0) {
             throw new IndexOutOfBoundsException(
@@ -242,6 +258,23 @@ public class ArrayOctetReader extends OctetReader {
         }
         int base = index + offset;
         return Arrays.copyOfRange(content, base, base + count);
+    }
+
+    @Override
+    public OctetString peekOctetString(int offset, int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("octet count is negative");
+        }
+        if (offset < 0) {
+            throw new IndexOutOfBoundsException(
+                "negative offset into octet stream");
+        }
+        if (offset > remaining() - count) {
+            throw new IndexOutOfBoundsException(
+                "peek beyond end of octet stream");
+        }
+        int base = index + offset;
+        return new ArrayOctetString(content, base, count, getByteOrder());
     }
 
     @Override
