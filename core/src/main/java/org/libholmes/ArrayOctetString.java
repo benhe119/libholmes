@@ -159,6 +159,23 @@ public class ArrayOctetString extends OctetString {
     }
 
     @Override
+    public OctetString getOctetString(int index, int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("octet count is negative");
+        }
+        if (index < 0) {
+            throw new IndexOutOfBoundsException(
+                "negative index into octet string");
+        }
+        if (index > len - count) {
+            throw new IndexOutOfBoundsException(
+                "read beyond end of octet string");
+        }
+        int base = offset + index;
+        return new ArrayOctetString(content, base, count, getByteOrder());
+    }
+
+    @Override
     public OctetReader makeOctetReader(int index, int count) {
         if (count < 0) {
             throw new IllegalArgumentException("octet count is negative");
