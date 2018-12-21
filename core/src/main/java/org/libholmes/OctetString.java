@@ -114,6 +114,29 @@ public abstract class OctetString {
         return getBytes(0, length());
     }
 
+    /** Make a reader for part of this OctetString.
+     * @param index the index into the octet string
+     * @param count the number of octets to be read
+     * @return the resulting OctetReader
+     */
+    public OctetReader makeOctetReader(int index, int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("octet count is negative");
+        }
+        byte[] result = new byte[count];
+        for (int i = 0; i != count; ++i) {
+            result[i] = getByte(index + i);
+        }
+        return new ArrayOctetReader(result, getByteOrder());
+    }
+
+    /** Make a reader for the whole of this OctetString.
+     * @return the resulting OctetReader
+     */
+    public OctetReader makeOctetReader() {
+        return makeOctetReader(0, length());
+    }
+
     /** Get the length of the octet string.
      * @return the length, in octets
      */
