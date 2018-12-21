@@ -14,6 +14,7 @@
   </dependencies>
   <modules>
     <module>core</module>
+    <module>pcap</module>
   </modules>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
