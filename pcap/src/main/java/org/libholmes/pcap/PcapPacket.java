@@ -5,11 +5,14 @@
 
 package org.libholmes.pcap;
 
+import javax.json.JsonObjectBuilder;
+
 import org.libholmes.OctetReader;
 import org.libholmes.OctetString;
+import org.libholmes.Artefact;
 
 /** A class to represent a packet within a PCAP file. */
-public class PcapPacket {
+public class PcapPacket extends Artefact {
     /** The seconds component of the timestamp.
      * This is the number of seconds since the UNIX epoch. */
     private final int tsSec;
@@ -30,9 +33,11 @@ public class PcapPacket {
     private final OctetString payload;
 
     /** Construct PcapPacket from octet source.
+     * @param parent the parent of this artefact, or null if none
      * @param reader the octet source
      */
-    protected PcapPacket(OctetReader reader) {
+    protected PcapPacket(Artefact parent, OctetReader reader) {
+        super(parent);
         this.tsSec = reader.readInt();
         this.tsUsec = reader.readInt();
         this.caplen = reader.readInt();
@@ -82,11 +87,21 @@ public class PcapPacket {
         return payload;
     }
 
+    @Override
+    protected final void buildJson(JsonObjectBuilder builder) {
+        builder.add("tsSec", getTsSec() & 0xffffffffL);
+        builder.add("tsUsec", getTsUsec() & 0xffffffffL);
+        builder.add("capturedLength", getCapturedLength() & 0xffffffffL);
+        builder.add("originalLength", getOriginalLength() & 0xffffffffL);
+        builder.add("payload", getPayload().toString());
+    }
+
     /** Parse PcapPacket from octet source.
+     * @param parent the parent of this artefact, or null if none
      * @param reader the octet source
      * @return the resulting PcapPacket
      */
-    public static PcapPacket parse(OctetReader reader) {
-        return new PcapPacket(reader);
+    public static PcapPacket parse(Artefact parent, OctetReader reader) {
+        return new PcapPacket(parent, reader);
     }
 }

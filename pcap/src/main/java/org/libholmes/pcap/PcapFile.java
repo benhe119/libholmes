@@ -5,13 +5,16 @@
 
 package org.libholmes.pcap;
 
+import javax.json.JsonObjectBuilder;
+
 import org.libholmes.OctetReader;
 import org.libholmes.ParseException;
+import org.libholmes.Artefact;
 
 /** A class to represent a PCAP file.
  * Both big- and little-endian variants are supported.
  */
-public class PcapFile {
+public class PcapFile extends Artefact {
     /** The magic number.
      * This should always be equal to 0xa1b2c3d4.
      */
@@ -49,10 +52,12 @@ public class PcapFile {
     private OctetReader reader;
 
     /** Construct PcapFile from octet source.
+     * @param parent the parent of this artefact, or null if none
      * @param reader the octet source
      * @throws ParseException if the octet stream could not be parsed
      */
-    public PcapFile(OctetReader reader) throws ParseException {
+    public PcapFile(Artefact parent, OctetReader reader) throws ParseException {
+        super(parent);
         if ((reader.peekInt(0) & 0xffffffffL) == 0xa1b2c3d4L) {
             // No action required: already set to corect byte order.
         } else if ((reader.peekInt(0) & 0xffffffffL) == 0xd4c3b2a1L) {
@@ -130,7 +135,7 @@ public class PcapFile {
      * @return the resulting packet
      */
     public final PcapPacket readPacket() {
-        return new PcapPacket(reader);
+        return new PcapPacket(this, reader);
     }
 
     /** Check whether there is any data remaining to be read.
@@ -143,14 +148,26 @@ public class PcapFile {
         return reader.hasRemaining();
     }
 
+    @Override
+    protected final void buildJson(JsonObjectBuilder builder) {
+        builder.add("magicNumber", getMagicNumber() & 0xffffffffL);
+        builder.add("versionMajor", getVersionMajor());
+        builder.add("versionMinor", getVersionMinor());
+        builder.add("thisZone", getThisZone());
+        builder.add("sigFigs", getSigFigs());
+        builder.add("snapLen", getSnapLen());
+        builder.add("networkType", getNetworkType());
+    }
+
     /** Make PcapFile from octet source.
+     * @param parent the parent of this artefact, or null if none
      * @param reader the octet source
      * @return the resulting PcapFile
      * @throws ParseException if the octet stream could not be parsed
      */
-    public static PcapFile parse(OctetReader reader)
+    public static PcapFile parse(Artefact parent, OctetReader reader)
         throws ParseException {
 
-        return new PcapFile(reader);
+        return new PcapFile(parent, reader);
     }
 }
