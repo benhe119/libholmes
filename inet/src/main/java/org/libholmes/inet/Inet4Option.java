@@ -171,6 +171,16 @@ public abstract class Inet4Option extends Artefact {
         throws ParseException {
 
         Inet4Option option = new Inet4UnrecognisedOption(parent, reader);
+        try {
+            switch (option.getType()) {
+                case OPTION_EOOL:
+                    option = new Inet4EndOfOptionsList(option);
+                    break;
+            }
+        } catch (Exception ex) {
+            // Failed to parse option as a specific type,
+            // but can keep it as a generic option.
+        }
         return option;
     }
 }
