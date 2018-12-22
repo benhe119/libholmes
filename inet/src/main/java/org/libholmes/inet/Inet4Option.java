@@ -170,6 +170,7 @@ public abstract class Inet4Option extends Artefact {
     static Inet4Option parse(Artefact parent, OctetReader reader)
         throws ParseException {
 
-        throw new ParseException("not yet implemented");
+        Inet4Option option = new Inet4UnrecognisedOption(parent, reader);
+        return option;
     }
 }
