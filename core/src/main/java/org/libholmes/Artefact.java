@@ -43,4 +43,10 @@ public abstract class Artefact {
         buildJson(builder);
         return builder.build();
     }
+
+   /** Examine this artefact.
+     * By default this method does nothing.
+     * @param logger a logger for recording findings
+     */
+    public void examine(Logger logger) {}
 }
