@@ -176,6 +176,9 @@ public abstract class Inet4Option extends Artefact {
                 case OPTION_EOOL:
                     option = new Inet4EndOfOptionsList(option);
                     break;
+                case OPTION_NOP:
+                    option = new Inet4NoOperationOption(option);
+                    break;
             }
         } catch (Exception ex) {
             // Failed to parse option as a specific type,
