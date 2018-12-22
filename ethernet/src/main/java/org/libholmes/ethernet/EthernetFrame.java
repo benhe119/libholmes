@@ -10,6 +10,7 @@ import javax.json.JsonObjectBuilder;
 import org.libholmes.OctetReader;
 import org.libholmes.OctetString;
 import org.libholmes.Artefact;
+import org.libholmes.Logger;
 
 /** A class to represent an Ethernet II frame. */
 public final class EthernetFrame extends Artefact {
@@ -79,6 +80,28 @@ public final class EthernetFrame extends Artefact {
         builder.add("srcAddr", getSrcAddr().toString());
         builder.add("etherType", getEtherType());
         builder.add("payload", getPayload().toString());
+    }
+
+    @Override
+    public void examine(Logger logger) {
+        // Technically the minimum frame size is defined to be dependent on
+        // the data rate, however it has a fixed value of 14 + 46 + 4 = 64
+        // for all listed rates (IEEE Std 802.3-2012 section 4.4.2).
+        // Maximum frame sizes are listed, however jumbo frames are
+        // sufficiently widespread that there would be little value in
+        // reporting them as findings.
+        if (payload.length() < 46) {
+            logger.log("Runt Ethernet frame (payload length %d octets)",
+                payload.length());
+        }
+
+        // Bit 0 of the source address is reserved and must be set to zero
+        // (IEEE Std 802.3-2012 section 3.2.3).
+        if (srcAddr.isBroadcastAddress()) {
+            logger.log("Broadcast address as Ethernet source address");
+        } else if (srcAddr.isMulticastAddress()) {
+            logger.log("Multicast address as Ethernet source address");
+        }
     }
 
     /** Parse Ethernet frame from an OctetReader.
