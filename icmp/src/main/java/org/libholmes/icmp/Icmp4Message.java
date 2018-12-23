@@ -106,7 +106,8 @@ public abstract class Icmp4Message extends Artefact {
     static public Icmp4Message parse(Artefact parent, OctetReader reader)
         throws ParseException {
 
-        throw new ParseException("not yet implemented");
+        Icmp4Message message = new Icmp4UnrecognisedMessage(parent, reader);
+        return message;
     }
 
     /** Parse ICMPv4 message from an OctetString.
