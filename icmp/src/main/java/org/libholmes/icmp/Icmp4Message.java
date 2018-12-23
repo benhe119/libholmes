@@ -107,6 +107,14 @@ public abstract class Icmp4Message extends Artefact {
         throws ParseException {
 
         Icmp4Message message = new Icmp4UnrecognisedMessage(parent, reader);
+        switch (message.getType()) {
+            case 0:
+                message = new Icmp4EchoReplyMessage(message);
+                break;
+            case 8:
+                message = new Icmp4EchoMessage(message);
+                break;
+        }
         return message;
     }
 
