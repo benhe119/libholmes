@@ -59,6 +59,8 @@ public abstract class InetDatagram extends Artefact {
 
         int version = (reader.peekByte(0) >> 4) & 0xf;
         switch (version) {
+        case 4:
+            return new Inet4Datagram(parent, reader);
         default:
             throw new ParseException(String.format(
                 "IP version %d not supported", version));

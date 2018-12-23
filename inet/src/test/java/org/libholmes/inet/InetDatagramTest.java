@@ -15,6 +15,16 @@ import org.libholmes.ParseException;
 
 public class InetDatagramTest {
     @Test
+    public void testInet4() throws ParseException {
+        HexOctetReader reader = new HexOctetReader(
+            "4500001cc9b4000040012ef0c0a80001" +
+            "c0a800eb0000d63129cd000100000000" +
+            "0000000000000000000000000000");
+        InetDatagram datagram = InetDatagram.parse(null, reader);
+        assertEquals(4, datagram.getVersion());
+    }
+
+    @Test
     public void testUnsupported() {
         for (int v = 0; v != 16; ++v) {
             if ((v != 4) && (v != 6)) {
