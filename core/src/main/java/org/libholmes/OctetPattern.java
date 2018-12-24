@@ -6,6 +6,8 @@
 package org.libholmes;
 
 import javax.json.JsonValue;
+import javax.json.JsonObject;
+import javax.json.JsonArray;
 
 /** An abstract base class to represent a pattern for matching against a
  * sequence of octets.
@@ -15,7 +17,7 @@ public abstract class OctetPattern {
      * @param octets the octet sequence to be matched
      * @return true if the whole octet sequence matched, otherwise false
      */
-    public abstract boolean match(OctetReader octets);
+    public abstract boolean matches(OctetReader octets);
 
     /** Parse OctetPattern from a specification in JSON format.
      * @param jsonSpec the specification to be parsed
