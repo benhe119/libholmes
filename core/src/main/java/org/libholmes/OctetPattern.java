@@ -28,6 +28,13 @@ public abstract class OctetPattern {
      * @return the resulting OctetPattern
      */
     public static OctetPattern parse(JsonValue jsonSpec) {
+        if (jsonSpec instanceof JsonObject) {
+            JsonObject jsonObject = (JsonObject) jsonSpec;
+            String type = jsonObject.getString("type");
+            if (type.equals("hex")) {
+                return new HexOctetPattern(jsonObject);
+            }
+        }
         throw new IllegalArgumentException(
             "invalid specification for OctetPattern");
     }
