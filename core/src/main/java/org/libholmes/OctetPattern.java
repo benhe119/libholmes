@@ -14,8 +14,12 @@ import javax.json.JsonArray;
  */
 public abstract class OctetPattern {
     /** Determine whether this pattern matches a given sequence of octets.
+     * If it is able to, this method will reade a maximal-length sequence of
+     * octets from the given reader which are an exact match for the pattern.
+     * If this is not possible then it is unspecified how many octets will be
+     * be read.
      * @param octets the octet sequence to be matched
-     * @return true if the whole octet sequence matched, otherwise false
+     * @return true if the octet sequence matched, otherwise false
      */
     public abstract boolean matches(OctetReader octets);
 
