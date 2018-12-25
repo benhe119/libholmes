@@ -28,7 +28,10 @@ public abstract class OctetPattern {
      * @return the resulting OctetPattern
      */
     public static OctetPattern parse(JsonValue jsonSpec) {
-        if (jsonSpec instanceof JsonObject) {
+        if (jsonSpec instanceof JsonArray) {
+            JsonArray jsonArray = (JsonArray) jsonSpec;
+            return new SequenceOctetPattern(jsonArray);
+        } else if (jsonSpec instanceof JsonObject) {
             JsonObject jsonObject = (JsonObject) jsonSpec;
             String type = jsonObject.getString("type");
             if (type.equals("hex")) {
