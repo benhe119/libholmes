@@ -36,6 +36,8 @@ public abstract class OctetPattern {
             String type = jsonObject.getString("type");
             if (type.equals("hex")) {
                 return new HexOctetPattern(jsonObject);
+            } else if (type.equals("wildcard")) {
+                return new WildcardOctetPattern(jsonObject);
             }
         }
         throw new IllegalArgumentException(
