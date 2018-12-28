@@ -40,6 +40,8 @@ public abstract class OctetPattern {
                 return new WildcardOctetPattern(jsonObject);
             } else if (type.equals("timeval")) {
                 return new TimevalOctetPattern(jsonObject);
+            } else if (type.equals("step")) {
+                return new StepOctetPattern(jsonObject);
             }
         }
         throw new IllegalArgumentException(
