@@ -38,6 +38,8 @@ public abstract class OctetPattern {
                 return new HexOctetPattern(jsonObject);
             } else if (type.equals("wildcard")) {
                 return new WildcardOctetPattern(jsonObject);
+            } else if (type.equals("text")) {
+                return new TextOctetPattern(jsonObject);
             } else if (type.equals("timeval")) {
                 return new TimevalOctetPattern(jsonObject);
             } else if (type.equals("step")) {
