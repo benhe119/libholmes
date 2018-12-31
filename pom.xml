@@ -23,6 +23,7 @@
     <module>ethernet</module>
     <module>inet</module>
     <module>icmp</module>
+    <module>udp</module>
   </modules>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
