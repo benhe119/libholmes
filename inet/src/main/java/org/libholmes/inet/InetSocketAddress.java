@@ -61,4 +61,9 @@ public class InetSocketAddress {
     public int hashCode() {
         return address.hashCode() * 31 + port;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s:%d", address.toString(), port);
+    }
 }
