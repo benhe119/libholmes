@@ -10,9 +10,10 @@ import javax.json.JsonObjectBuilder;
 import org.libholmes.OctetReader;
 import org.libholmes.OctetString;
 import org.libholmes.Artefact;
+import org.libholmes.Timestamped;
 
 /** A class to represent a packet within a PCAP file. */
-public class PcapPacket extends Artefact {
+public class PcapPacket extends Artefact implements Timestamped {
     /** The seconds component of the timestamp.
      * This is the number of seconds since the UNIX epoch. */
     private final int tsSec;
@@ -60,6 +61,11 @@ public class PcapPacket extends Artefact {
      */
     public final int getTsUsec() {
         return tsUsec;
+    }
+
+    @Override
+    public final long getTimestamp() {
+        return ((tsSec * 1000000L) + tsUsec) * 1000;
     }
 
     /** Get the captured length of this packet.

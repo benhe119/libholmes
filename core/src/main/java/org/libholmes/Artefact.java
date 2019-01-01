@@ -33,7 +33,7 @@ public abstract class Artefact {
     /** Get ancestor artefaxct of given subclass.
      * @return the ancestor artefact
      */
-    public final <T extends Artefact> T getAncestor(Class<T> type) {
+    public final <T> T getAncestor(Class<T> type) {
         Artefact p = this.parent;
         while (p != null) {
             if (type.isInstance(p)) {
