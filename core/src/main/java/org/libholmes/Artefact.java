@@ -23,11 +23,25 @@ public abstract class Artefact {
         this.parent = parent;
     }
 
-    /** Get parent.
+    /** Get parent artefact.
      * @return the parent of this artefact, or null if none
      */
     public final Artefact getParent() {
         return parent;
+    }
+
+    /** Get ancestor artefaxct of given subclass.
+     * @return the ancestor artefact
+     */
+    public final <T extends Artefact> T getAncestor(Class<T> type) {
+        Artefact p = this.parent;
+        while (p != null) {
+            if (type.isInstance(p)) {
+                return type.cast(p);
+            }
+            p = p.parent;
+        }
+        throw new ClassCastException("Artefact has no parent of requested type");
     }
 
     /** Build a JSON object for this option.
