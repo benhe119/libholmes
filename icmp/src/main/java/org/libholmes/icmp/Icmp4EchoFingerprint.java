@@ -16,6 +16,9 @@ public class Icmp4EchoFingerprint {
     /** The unique ID of this fingerprint. */
     private final String id;
 
+    /** True if length suffix appended to ID, otherwise false. */
+    private final boolean lengthSuffix;
+
     /** The pattern which the data field must match in full. */
     private final OctetPattern dataPattern;
 
@@ -24,14 +27,35 @@ public class Icmp4EchoFingerprint {
      */
     public Icmp4EchoFingerprint(JsonObject json) {
         id = json.getString("_id");
+        lengthSuffix = json.getBoolean("lengthSuffix", false);
         dataPattern = OctetPattern.parse(json.get("data"));
     }
 
-    /** Get the unique ID of this fingerprint.
-     * @return the unique ID
+    /** Get the unique ID of this fingerprint (without length).
+     * @return the unique ID, without length
      */
     public String getId() {
         return id;
+    }
+
+    /** Get the unique ID of this fingerprint (with length).
+     * @param message the message matched
+     * @return the unique ID, with length if appropriate
+     */
+    public String getId(Icmp4Message message) {
+        if (lengthSuffix) {
+            if (message instanceof Icmp4EchoMessage) {
+                Icmp4EchoMessage request = (Icmp4EchoMessage) message;
+                return String.format("%s/%d", id, request.getData().length());
+            } else if (message instanceof Icmp4EchoReplyMessage) {
+                Icmp4EchoReplyMessage reply = (Icmp4EchoReplyMessage) message;
+                return String.format("%s/%d", id, reply.getData().length());
+            } else {
+                return id;
+            }
+        } else {
+            return id;
+        }
     }
 
     /** Determine whether this fingerprint matches a given ICMPv4 message.
