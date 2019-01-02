@@ -31,6 +31,7 @@ public class HexOctetPattern extends OctetPattern {
     public final boolean matches(OctetReader reader) {
         if (repeat) {
             int index = 0;
+            int count = 0;
             while (reader.hasRemaining()) {
                 if (reader.readByte() != pattern.getByte(index)) {
                     return false;
@@ -39,8 +40,9 @@ public class HexOctetPattern extends OctetPattern {
                 if (index == pattern.length()) {
                     index = 0;
                 }
+                count += 1;
             }
-            return index >= minLength;
+            return count >= minLength;
         } else {
             if (reader.remaining() < pattern.length()) {
                 return false;
