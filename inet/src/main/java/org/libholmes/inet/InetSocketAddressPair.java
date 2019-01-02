@@ -46,6 +46,29 @@ public class InetSocketAddressPair {
     }
 
     @Override
+    public boolean equals(Object thatObject) {
+        if (thatObject == this) {
+            return true;
+        }
+        if (thatObject == null) {
+            return false;
+        }
+        // Require an exact match between the address types.
+        if (thatObject.getClass() == this.getClass()) {
+            InetSocketAddressPair that = (InetSocketAddressPair) thatObject;
+            return (this.srcAddr.equals(that.srcAddr)) &&
+                (this.dstAddr.equals(that.dstAddr));
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return srcAddr.hashCode() * 31 + dstAddr.hashCode();
+    }
+
+    @Override
     public String toString() {
         return String.format("%s->%s", srcAddr.toString(), dstAddr.toString());
     }
