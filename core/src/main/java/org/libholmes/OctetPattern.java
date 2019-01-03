@@ -44,6 +44,8 @@ public abstract class OctetPattern {
                 return new DomainOctetPattern(jsonObject);
             } else if (type.equals("timeval")) {
                 return new TimevalOctetPattern(jsonObject);
+            } else if (type.equals("time")) {
+                return new TimeOctetPattern(jsonObject);
             } else if (type.equals("step")) {
                 return new StepOctetPattern(jsonObject);
             }
