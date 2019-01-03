@@ -19,6 +19,12 @@ public class Icmp4EchoFingerprint {
     /** True if length suffix appended to ID, otherwise false. */
     private final boolean lengthSuffix;
 
+    /** The identifier which must be matched, or null for any value. */
+    private final Integer identifier;
+
+    /** The sequence number which must be matched, or null for any value. */
+    private final Integer sequenceNumber;
+
     /** The pattern which the data field must match in full. */
     private final OctetPattern dataPattern;
 
@@ -28,6 +34,10 @@ public class Icmp4EchoFingerprint {
     public Icmp4EchoFingerprint(JsonObject json) {
         id = json.getString("_id");
         lengthSuffix = json.getBoolean("lengthSuffix", false);
+        identifier = json.containsKey("identifier") ?
+            new Integer(json.getInt("identifier")) : null;
+        sequenceNumber = json.containsKey("sequenceNumber") ?
+            new Integer(json.getInt("sequenceNumber")) : null;
         dataPattern = OctetPattern.parse(json.get("data"));
     }
 
@@ -65,6 +75,12 @@ public class Icmp4EchoFingerprint {
     public final boolean matches(Icmp4Message message) {
         if (message instanceof Icmp4EchoMessage) {
             Icmp4EchoMessage request = (Icmp4EchoMessage) message;
+            if ((identifier != null) && (request.getIdentifier() != identifier)) {
+                return false;
+            }
+            if ((sequenceNumber != null) && (request.getSequenceNumber() != sequenceNumber)) {
+                return false;
+            }
             OctetReader reader = request.getData().makeOctetReader();
             if (!dataPattern.matches(reader)) {
                 return false;
@@ -74,6 +90,12 @@ public class Icmp4EchoFingerprint {
             }
         } else if (message instanceof Icmp4EchoReplyMessage) {
             Icmp4EchoReplyMessage reply = (Icmp4EchoReplyMessage) message;
+            if ((identifier != null) && (reply.getIdentifier() != identifier)) {
+                return false;
+            }
+            if ((sequenceNumber != null) && (reply.getSequenceNumber() != sequenceNumber)) {
+                return false;
+            }
             OctetReader reader = reply.getData().makeOctetReader();
             if (!dataPattern.matches(reader)) {
                 return false;
