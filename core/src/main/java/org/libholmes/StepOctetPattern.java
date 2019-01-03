@@ -92,6 +92,7 @@ public class StepOctetPattern extends OctetPattern {
     public final boolean matches(OctetReader reader) {
         int count = 0;
         long value = init;
+        long mask = (bitWidth < 64) ? ((1L << bitWidth) - 1) : -1L;
         while ((count < maxCount) && (reader.remaining() >= byteWidth)) {
             long acc = 0;
             for (int i = byteWidth - 1; i >= 0; --i) {
@@ -103,7 +104,7 @@ public class StepOctetPattern extends OctetPattern {
             }
             reader.skip(byteWidth);
             count += 1;
-            value += step;
+            value = (value + step) & mask;
         }
         return (count >= minCount);
     }
