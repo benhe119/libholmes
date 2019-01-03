@@ -15,8 +15,14 @@ public class HexOctetPattern extends OctetPattern {
     /** True if this is a repeating pattern, otherwise false. */
     private final boolean repeat;
 
-    /** The minimum permitted length, in octets. */
+    /** The minimum permitted length in octets. */
     private final int minLength;
+
+    /** The maximum permitted length in octets, or -1 if no limit. */
+    private final int maxLength;
+
+    /** The required length in octets, or -1 if no specific length. */
+    private final int length;
 
     /** Parse HexOctetPattern from a specification in JSON format.
      * @param jsonSpec the specification to be parsed
@@ -25,6 +31,8 @@ public class HexOctetPattern extends OctetPattern {
         pattern = new HexOctetString(jsonSpec.getString("content"));
         repeat = jsonSpec.getBoolean("repeat", false);
         minLength = jsonSpec.getInt("minLength", 0);
+        maxLength = jsonSpec.getInt("maxLength", -1);
+        length = jsonSpec.getInt("length", -1);
     }
 
     @Override
@@ -42,7 +50,10 @@ public class HexOctetPattern extends OctetPattern {
                 }
                 count += 1;
             }
-            return count >= minLength;
+            if (count < minLength) return false;
+            if ((maxLength >= 0) && (count > maxLength)) return false;
+            if ((length >= 0) && (count != length)) return false;
+            return true;
         } else {
             if (reader.remaining() < pattern.length()) {
                 return false;
