@@ -73,4 +73,54 @@ public class Inet4AddressTest {
         assertTrue(Inet4Address.parse(new HexOctetReader("7fffffff")).
             isLoopbackAddress());
     }
+
+    @Test
+    public void testString() throws ParseException {
+        Inet4Address address = Inet4Address.parse("192.168.0.1");
+        assertEquals("192.168.0.1", address.toString());
+        assertFalse(address.isMulticastAddress());
+        assertFalse(address.isBroadcastAddress());
+        assertFalse(address.isWildcardAddress());
+        assertFalse(address.isLoopbackAddress());
+    }
+
+    @Test
+    public void testMulticastString() throws ParseException {
+        Inet4Address address = Inet4Address.parse("224.0.0.1");
+        assertEquals("224.0.0.1", address.toString());
+        assertTrue(address.isMulticastAddress());
+        assertFalse(address.isBroadcastAddress());
+        assertFalse(address.isWildcardAddress());
+        assertFalse(address.isLoopbackAddress());
+    }
+
+    @Test
+    public void testBroadcastString() throws ParseException {
+        Inet4Address address = Inet4Address.parse("255.255.255.255");
+        assertEquals("255.255.255.255", address.toString());
+        assertTrue(address.isMulticastAddress());
+        assertTrue(address.isBroadcastAddress());
+        assertFalse(address.isWildcardAddress());
+        assertFalse(address.isLoopbackAddress());
+    }
+
+    @Test
+    public void testWildcardString() throws ParseException {
+        Inet4Address address = Inet4Address.parse("0.0.0.0");
+        assertEquals("0.0.0.0", address.toString());
+        assertFalse(address.isMulticastAddress());
+        assertFalse(address.isBroadcastAddress());
+        assertTrue(address.isWildcardAddress());
+        assertFalse(address.isLoopbackAddress());
+    }
+
+    @Test
+    public void testLoopbackString() throws ParseException {
+        Inet4Address address = Inet4Address.parse("127.0.0.1");
+        assertEquals("127.0.0.1", address.toString());
+        assertFalse(address.isMulticastAddress());
+        assertFalse(address.isBroadcastAddress());
+        assertFalse(address.isWildcardAddress());
+        assertTrue(address.isLoopbackAddress());
+    }
 }

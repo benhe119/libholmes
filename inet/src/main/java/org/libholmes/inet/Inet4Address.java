@@ -7,6 +7,7 @@ package org.libholmes.inet;
 
 import org.libholmes.OctetReader;
 import org.libholmes.OctetString;
+import org.libholmes.ArrayOctetString;
 import org.libholmes.Address;
 import org.libholmes.ParseException;
 
@@ -85,5 +86,36 @@ public class Inet4Address extends InetAddress {
             // This should not happen.
             throw new RuntimeException(ex);
         }
+    }
+
+    /** Parse Inet4Address from a String in dotted quad format.
+     * @param addrStr the address as a character string
+     */
+    public static Inet4Address parse(String addrStr) throws ParseException {
+        String[] parts = addrStr.split("[.]");
+        if (parts.length != 4) {
+            throw new ParseException(
+                "Invalid number of components for IPv4 address");
+        }
+
+        byte[] bytes = new byte[4];
+        int index = 0;
+        for (String part : parts) {
+            try {
+                int value = Integer.parseInt(part, 10);
+                if ((value < 0) || (value > 255)) {
+                    throw new ParseException(
+                        "Number out of range for IPv4 address");
+                }
+                bytes[index] = (byte)value;
+                index += 1;
+            } catch (NumberFormatException ex) {
+                throw new ParseException(
+                    "Invalid number in IPv4 address");
+            }
+        }
+
+        return parse(new ArrayOctetString(bytes,
+            ArrayOctetString.BIG_ENDIAN));
     }
 }
