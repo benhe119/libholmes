@@ -49,15 +49,31 @@ public abstract class OctetPattern {
         registerType("inet", "org.libholmes.inet.InetAddressOctetPattern");
     }
 
+    /** An empty pattern matching context, for use when one has not been
+     * supplied. */
+    private static final OctetPatternContext emptyContext =
+        new OctetPatternContext();
+
     /** Determine whether this pattern matches a given sequence of octets.
      * If it is able to, this method will reade a maximal-length sequence of
      * octets from the given reader which are an exact match for the pattern.
      * If this is not possible then it is unspecified how many octets will be
      * be read.
      * @param octets the octet sequence to be matched
+     * @param context information for context-dependent patterns
      * @return true if the octet sequence matched, otherwise false
      */
-    public abstract boolean matches(OctetReader octets);
+    public abstract boolean matches(OctetReader octets,
+        OctetPatternContext context);
+
+    /** Determine whether this pattern matches a given sequence of octets.
+     * This is a convenience method for when there is no supplied context.
+     * @param octets the octet sequence to be matched
+     * @return true if the octet sequence matched, otherwise false
+     */
+    public final boolean matches(OctetReader octets) {
+        return matches(octets, emptyContext);
+    }
 
     /** Parse OctetPattern from a specification in JSON format.
      * @param jsonSpec the specification to be parsed

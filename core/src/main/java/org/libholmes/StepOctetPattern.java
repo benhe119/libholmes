@@ -1,5 +1,5 @@
 // This file is part of libholmes.
-// Copyright 2018 Graham Shaw.
+// Copyright 2018-2019 Graham Shaw.
 // Distribution and modification are permitted within the terms of the
 // GNU General Public License (version 3 or any later version).
 
@@ -89,7 +89,9 @@ public class StepOctetPattern extends OctetPattern {
     }
 
     @Override
-    public final boolean matches(OctetReader reader) {
+    public final boolean matches(OctetReader reader,
+        OctetPatternContext context) {
+
         int count = 0;
         long value = init;
         long mask = (bitWidth < 64) ? ((1L << bitWidth) - 1) : -1L;
