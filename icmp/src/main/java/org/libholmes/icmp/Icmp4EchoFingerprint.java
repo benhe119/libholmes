@@ -10,6 +10,7 @@ import javax.json.JsonObject;
 
 import org.libholmes.OctetReader;
 import org.libholmes.OctetPattern;
+import org.libholmes.OctetPatternContext;
 import org.libholmes.Artefact;
 
 public class Icmp4EchoFingerprint {
@@ -70,9 +71,10 @@ public class Icmp4EchoFingerprint {
 
     /** Determine whether this fingerprint matches a given ICMPv4 message.
      * @param message the message against which to match
+     * @param context the pattern matching context
      * @return true if fingerprint matches, otherwise false
      */
-    public final boolean matches(Icmp4Message message) {
+    public final boolean matches(Icmp4Message message, OctetPatternContext context) {
         if (message instanceof Icmp4EchoMessage) {
             Icmp4EchoMessage request = (Icmp4EchoMessage) message;
             if ((identifier != null) && (request.getIdentifier() != identifier)) {
@@ -82,7 +84,7 @@ public class Icmp4EchoFingerprint {
                 return false;
             }
             OctetReader reader = request.getData().makeOctetReader();
-            if (!dataPattern.matches(reader)) {
+            if (!dataPattern.matches(reader, context)) {
                 return false;
             }
             if (reader.hasRemaining()) {
@@ -97,7 +99,7 @@ public class Icmp4EchoFingerprint {
                 return false;
             }
             OctetReader reader = reply.getData().makeOctetReader();
-            if (!dataPattern.matches(reader)) {
+            if (!dataPattern.matches(reader, context)) {
                 return false;
             }
             if (reader.hasRemaining()) {
