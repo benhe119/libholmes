@@ -36,4 +36,16 @@ public abstract class InetAddress extends Address {
      * @return the broadcast address
      */
     public abstract InetAddress getBroadcastAddress(int prefixLength);
+
+    /** Parse InetAddress from a String.
+     * IPv4 addresses must be in dotted quad format.
+     * @param addrStr the address as a character string
+     */
+    public static InetAddress parse(String addrStr) throws ParseException {
+        if (addrStr.matches("^[0-9]+[.][0-9]+[.][0-9]+[.][0-9]+$")) {
+            return Inet4Address.parse(addrStr);
+        } else {
+            throw new ParseException("IP address stringformat not recognised");
+        }
+    }
 }
