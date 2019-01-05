@@ -123,4 +123,25 @@ public class Inet4AddressTest {
         assertFalse(address.isWildcardAddress());
         assertTrue(address.isLoopbackAddress());
     }
+
+    @Test
+    public void testNetworkBroadcastAddresses() throws ParseException {
+        Inet4Address address1 = Inet4Address.parse("192.168.231.137");
+        assertEquals("192.168.0.0",
+            address1.getNetworkAddress(16).toString());
+        assertEquals("192.168.255.255",
+            address1.getBroadcastAddress(16).toString());
+
+        Inet4Address address2 = Inet4Address.parse("172.21.169.54");
+        assertEquals("172.16.0.0",
+            address2.getNetworkAddress(12).toString());
+        assertEquals("172.31.255.255",
+            address2.getBroadcastAddress(12).toString());
+
+        Inet4Address address3 = Inet4Address.parse("10.145.177.89");
+        assertEquals("10.0.0.0",
+            address3.getNetworkAddress(8).toString());
+        assertEquals("10.255.255.255",
+            address3.getBroadcastAddress(8).toString());
+    }
 }

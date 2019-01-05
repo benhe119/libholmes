@@ -1,5 +1,5 @@
 // This file is part of libholmes.
-// Copyright 2018 Graham Shaw.
+// Copyright 2018-2019 Graham Shaw.
 // Distribution and modification are permitted within the terms of the
 // GNU General Public License (version 3 or any later version).
 
@@ -46,6 +46,58 @@ public class Inet4Address extends InetAddress {
             builder.append(String.format("%d", v));
         }
         return builder.toString();
+    }
+
+    @Override
+    public final Inet4Address getNetworkAddress(int prefixLength) {
+        if ((prefixLength < 0) || (prefixLength > 32)) {
+            throw new IllegalArgumentException("Invalid CIDR prefix length");
+        }
+        byte[] bytes = content.getBytes();
+        int index = 3;
+
+        int remaining = 32 - prefixLength;
+        while (remaining >= 8) {
+            bytes[index] = 0;
+            index -= 1;
+            remaining -= 8;
+        }
+        if (remaining > 0) {
+            bytes[index] &= ~((1 << remaining) - 1);
+        }
+
+        try {
+            return parse(new ArrayOctetString(bytes, content.getByteOrder()));
+        } catch (ParseException ex) {
+            // It should not be possible for the address length to be incorrect.
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public final Inet4Address getBroadcastAddress(int prefixLength) {
+        if ((prefixLength < 0) || (prefixLength > 32)) {
+            throw new IllegalArgumentException("Invalid CIDR prefix length");
+        }
+        byte[] bytes = content.getBytes();
+        int index = 3;
+
+        int remaining = 32 - prefixLength;
+        while (remaining >= 8) {
+            bytes[index] = (byte)0xff;
+            index -= 1;
+            remaining -= 8;
+        }
+        if (remaining > 0) {
+            bytes[index] |= ((1 << remaining) - 1);
+        }
+
+        try {
+            return parse(new ArrayOctetString(bytes, content.getByteOrder()));
+        } catch (ParseException ex) {
+            // It should not be possible for the address length to be incorrect.
+            throw new RuntimeException(ex);
+        }
     }
 
     /** Parse Inet4Address from an OctetString.

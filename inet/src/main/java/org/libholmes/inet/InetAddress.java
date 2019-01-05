@@ -1,5 +1,5 @@
 // This file is part of libholmes.
-// Copyright 2018 Graham Shaw.
+// Copyright 2018-2019 Graham Shaw.
 // Distribution and modification are permitted within the terms of the
 // GNU General Public License (version 3 or any later version).
 
@@ -24,4 +24,16 @@ public abstract class InetAddress extends Address {
     protected InetAddress(OctetString content) {
         super(content);
     }
+
+    /** Get the network address of a subnet containing this address.
+     * @param prefixLength the required prefix length, in bits
+     * @return the network address
+     */
+    public abstract InetAddress getNetworkAddress(int prefixLength);
+
+    /** Get the broadcast address of a subnet containing this address.
+     * @param prefixLength the required prefix length, in bits
+     * @return the broadcast address
+     */
+    public abstract InetAddress getBroadcastAddress(int prefixLength);
 }
