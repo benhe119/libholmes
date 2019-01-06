@@ -88,6 +88,16 @@ public class TcpOption extends Artefact {
         throws ParseException {
 
         TcpOption option = new TcpUnrecognisedOption(parent, reader);
+        try {
+            switch (option.getKind()) {
+                case 0:
+                    option = new TcpEndOfOptionsList(option);
+                    break;
+            }
+        } catch (Exception ex) {
+            // Failed to parse option as a specific type,
+            // but can keep it as a generic option.
+        }
         return option;
     }
 }
