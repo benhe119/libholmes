@@ -87,6 +87,7 @@ public class TcpOption extends Artefact {
     static TcpOption parse(Artefact parent, OctetReader reader)
         throws ParseException {
 
-        throw new ParseException("Not yet implemented");
+        TcpOption option = new TcpUnrecognisedOption(parent, reader);
+        return option;
     }
 }
