@@ -96,6 +96,9 @@ public class TcpOption extends Artefact {
                case 1:
                     option = new TcpNoOperationOption(option);
                     break;
+                case 2:
+                    option = new TcpMaximumSegmentSizeOption(option);
+                    break;
             }
         } catch (Exception ex) {
             // Failed to parse option as a specific type,
