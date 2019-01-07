@@ -108,6 +108,9 @@ public class TcpOption extends Artefact {
                 case 5:
                     option = new TcpSackOption(option);
                     break;
+                case 8:
+                    option = new TcpTimestampsOption(option);
+                    break;
             }
         } catch (Exception ex) {
             // Failed to parse option as a specific type,
