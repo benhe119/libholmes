@@ -20,6 +20,12 @@ public class Icmp4EchoFingerprint {
     /** True if length suffix appended to ID, otherwise false. */
     private final boolean lengthSuffix;
 
+    /** The checksum which must be matched, or null for any value.
+     * This is included for matching tools such as Paris Traceroute which
+     * manipulate the payload in order to obtain a particular checksum.
+     */
+    private final Integer checksum;
+
     /** The identifier which must be matched, or null for any value. */
     private final Integer identifier;
 
@@ -35,6 +41,8 @@ public class Icmp4EchoFingerprint {
     public Icmp4EchoFingerprint(JsonObject json) {
         id = json.getString("_id");
         lengthSuffix = json.getBoolean("lengthSuffix", false);
+        checksum = json.containsKey("checksum") ?
+            new Integer(json.getInt("checksum")): null;
         identifier = json.containsKey("identifier") ?
             new Integer(json.getInt("identifier")) : null;
         sequenceNumber = json.containsKey("sequenceNumber") ?
@@ -75,6 +83,9 @@ public class Icmp4EchoFingerprint {
      * @return true if fingerprint matches, otherwise false
      */
     public final boolean matches(Icmp4Message message, OctetPatternContext context) {
+        if ((checksum != null) && (message.getRecordedChecksum() != checksum)) {
+            return false;
+        }
         if (message instanceof Icmp4EchoMessage) {
             Icmp4EchoMessage request = (Icmp4EchoMessage) message;
             if ((identifier != null) && (request.getIdentifier() != identifier)) {
