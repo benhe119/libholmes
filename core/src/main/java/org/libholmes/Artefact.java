@@ -1,5 +1,5 @@
 // This file is part of libholmes.
-// Copyright 2018 Graham Shaw.
+// Copyright 2018-2019 Graham Shaw.
 // Distribution and modification are permitted within the terms of the
 // GNU General Public License (version 3 or any later version).
 
@@ -30,7 +30,7 @@ public abstract class Artefact {
         return parent;
     }
 
-    /** Get ancestor artefaxct of given subclass.
+    /** Get ancestor artefact of given class.
      * @return the ancestor artefact
      */
     public final <T> T getAncestor(Class<T> type) {
@@ -42,6 +42,23 @@ public abstract class Artefact {
             p = p.parent;
         }
         throw new ClassCastException("Artefact has no parent of requested type");
+    }
+
+    /** Find artefact of given class.
+     * The search begins with this artefact, then considers ancestors in
+     * ascending order of distance.
+     * @return the artefact found
+     * @throws ClassCastException if no artefact found
+     */
+    public final <T> T find(Class<T> type) {
+        Artefact p = this;
+        while (p != null) {
+            if (type.isInstance(p)) {
+                return type.cast(p);
+            }
+            p = p.parent;
+        }
+        throw new ClassCastException("Found no artefact of requested type");
     }
 
     /** Build a JSON object for this option.

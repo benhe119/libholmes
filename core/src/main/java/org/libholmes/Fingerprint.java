@@ -38,6 +38,10 @@ public abstract class Fingerprint {
         types.put(typeName, constructor);
     }
 
+    static {
+        registerType("icmp_echo", "org.libholmes.icmp.Icmp4EchoFingerprint");
+    }
+
    /** An empty pattern matching context, for use when one has not been
      * supplied. */
     private static final OctetPatternContext emptyContext =
