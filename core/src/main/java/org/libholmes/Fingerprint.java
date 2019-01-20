@@ -39,6 +39,7 @@ public abstract class Fingerprint {
     }
 
     static {
+        registerType("inet4", "org.libholmes.inet.Inet4Fingerprint");
         registerType("icmp_echo", "org.libholmes.icmp.Icmp4EchoFingerprint");
     }
 
