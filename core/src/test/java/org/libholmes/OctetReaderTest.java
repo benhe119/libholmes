@@ -36,6 +36,9 @@ public class OctetReaderTest {
             }
             return content[index + offset];
         }
+        public MinimalOctetReader dupOctetReader() {
+            return new MinimalOctetReader(content, index, rem);
+        }
         public void skip(int count) {
             if (count < 0) {
                 throw new IllegalArgumentException(

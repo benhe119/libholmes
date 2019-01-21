@@ -278,6 +278,11 @@ public class ArrayOctetReader extends OctetReader {
     }
 
     @Override
+    public OctetReader dupOctetReader() {
+        return new ArrayOctetReader(content, index, rem, getByteOrder());
+    }
+
+    @Override
     public void skip(int count) {
         if (count < 0) {
             throw new IllegalArgumentException("octet count is negative");

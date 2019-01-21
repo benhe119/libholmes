@@ -9,10 +9,10 @@ package org.libholmes;
  * sequence of octets.
  *
  * Default implementations are provided for all methods except for peekByte,
- * skip and remaining, in order to reduce the amount of code required to
- * create a minimal working subclass. However, these defaults are unlikely to
- * be particularly efficient and it is expected that they will be overridden in
- * most cases.
+ * skip, remaining and dupOctetReader, in order to reduce the amount of code
+ * required to create a minimal working subclass. However, these defaults are
+ * unlikely to be particularly efficient and it is expected that they will be
+ * overridden in most cases.
  *
  * Byte order control has been designed in a way which could be extended to
  * allow for mixed-endian operation, however this is explicitly disallowed
@@ -233,6 +233,12 @@ public abstract class OctetReader implements Cloneable {
         }
         return new ArrayOctetString(result, byteOrder);
     }
+
+    /** Make a duplicate of this OctetReader.
+     * Following creation, the two OctetReaders operate independently.
+     * @return the resulting OctetReader
+     */
+    public abstract OctetReader dupOctetReader();
 
     /** Skip the given number of octets.
      * @param count the number of octets to skip
