@@ -47,8 +47,7 @@ public abstract class Artefact {
     /** Find artefact of given class.
      * The search begins with this artefact, then considers ancestors in
      * ascending order of distance.
-     * @return the artefact found
-     * @throws ClassCastException if no artefact found
+     * @return the artefact found, or null if not found
      */
     public final <T> T find(Class<T> type) {
         Artefact p = this;
@@ -58,7 +57,7 @@ public abstract class Artefact {
             }
             p = p.parent;
         }
-        throw new ClassCastException("Found no artefact of requested type");
+        return null;
     }
 
     /** Build a JSON object for this option.

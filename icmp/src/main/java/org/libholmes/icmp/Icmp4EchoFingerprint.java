@@ -54,6 +54,10 @@ public class Icmp4EchoFingerprint extends Fingerprint {
      */
     public final boolean matches(Artefact artefact, OctetPatternContext context) {
         Icmp4Message message = artefact.find(Icmp4Message.class);
+        if (message == null) {
+            return false;
+        }
+
         if ((checksum != null) && (message.getRecordedChecksum() != checksum)) {
             return false;
         }

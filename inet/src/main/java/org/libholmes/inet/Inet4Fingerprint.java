@@ -69,7 +69,10 @@ public class Inet4Fingerprint extends Fingerprint {
      * @return true if fingerprint matches, otherwise false
      */
     public final boolean matches(Artefact artefact, OctetPatternContext context) {
-        Inet4Datagram datagram = artefact.getAncestor(Inet4Datagram.class);
+        Inet4Datagram datagram = artefact.find(Inet4Datagram.class);
+        if (datagram == null) {
+            return false;
+        }
 
         if ((id != null) && (datagram.getId() != id)) {
             return false;
