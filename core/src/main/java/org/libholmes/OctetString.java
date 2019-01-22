@@ -1,9 +1,11 @@
 // This file is part of libholmes.
-// Copyright 2018 Graham Shaw.
+// Copyright 2018-2019 Graham Shaw.
 // Distribution and modification are permitted within the terms of the
 // GNU General Public License (version 3 or any later version).
 
 package org.libholmes;
+
+import java.nio.charset.Charset;
 
 /** An abstract base class to represent an artefact composed of a sequence
  * of octets.
@@ -112,6 +114,24 @@ public abstract class OctetString {
      */
     public byte[] getBytes() {
         return getBytes(0, length());
+    }
+
+    /** Get a character string from part of this octet string.
+     * @param index the index into the octet string
+     * @param count the number of octets to be included
+     * @param charset the character set used to perform the conversion
+     * @return the resulting character string
+     */
+    public String getString(int index, int count, Charset charset) {
+        return new String(getBytes(index, count), charset);
+    }
+
+    /** Get a character string from this octet string.
+     * @param charset the character set used to perform the conversion
+     * @return the resulting character string
+     */
+    public String getString(Charset charset) {
+        return new String(getBytes(0, length()), charset);
     }
 
     /** Get a given-length OctetString from this octet string.

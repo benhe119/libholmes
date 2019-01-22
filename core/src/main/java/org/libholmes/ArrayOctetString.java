@@ -1,10 +1,11 @@
 // This file is part of libholmes.
-// Copyright 2018 Graham Shaw.
+// Copyright 2018-2019 Graham Shaw.
 // Distribution and modification are permitted within the terms of the
 // GNU General Public License (version 3 or any later version).
 
 package org.libholmes;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /** An OctetString class for content stored in a byte array. */
@@ -156,6 +157,28 @@ public class ArrayOctetString extends OctetString {
         }
         int base = offset + index;
         return Arrays.copyOfRange(content, base, base + count);
+    }
+
+    @Override
+    public String getString(int index, int count, Charset charset) {
+        if (count < 0) {
+            throw new IllegalArgumentException("octet count is negative");
+        }
+        if (index < 0) {
+            throw new IndexOutOfBoundsException(
+                "negative index into octet string");
+        }
+        if (index > len - count) {
+            throw new IndexOutOfBoundsException(
+                "read beyond end of octet string");
+        }
+        int base = offset + index;
+        return new String(content, base, count, charset);
+    }
+
+    @Override
+    public String getString(Charset charset) {
+        return new String(content, offset, len, charset);
     }
 
     @Override

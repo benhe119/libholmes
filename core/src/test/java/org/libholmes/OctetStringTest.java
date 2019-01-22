@@ -1,9 +1,11 @@
 // This file is part of libholmes.
-// Copyright 2018 Graham Shaw.
+// Copyright 2018-2019 Graham Shaw.
 // Distribution and modification are permitted within the terms of the
 // GNU General Public License (version 3 or any later version).
 
 package org.libholmes;
+
+import java.nio.charset.Charset;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -257,6 +259,24 @@ public class OctetStringTest {
             string.getBytes(4, -1);
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException ex) {}
+    }
+
+    @Test
+    public void testGetStringPart() {
+        byte[] raw = {0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20,
+            0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21};
+        OctetString octetString = makeOctetStringBigEndian(raw);
+        Charset ascii = Charset.forName("US-ASCII");
+        assertEquals("World", octetString.getString(6, 5, ascii));
+    }
+
+    @Test
+    public void testGetStringFull() {
+        byte[] raw = {0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20,
+            0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21};
+        OctetString octetString = makeOctetStringBigEndian(raw);
+        Charset ascii = Charset.forName("US-ASCII");
+        assertEquals("Hello World!", octetString.getString(ascii));
     }
 
     @Test
