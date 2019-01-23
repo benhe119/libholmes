@@ -42,10 +42,15 @@ public abstract class InetAddress extends Address {
      * @param addrStr the address as a character string
      */
     public static InetAddress parse(String addrStr) throws ParseException {
-        if (addrStr.matches("^[0-9]+[.][0-9]+[.][0-9]+[.][0-9]+$")) {
+        // The regular expression patterns below are intended to determine
+        // detailed parsing should be attempted. A match does not necessarily
+        // indicate that the address is valid.
+        if (addrStr.matches("^[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}$")) {
             return Inet4Address.parse(addrStr);
+        } else if (addrStr.matches("([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{0,4}|[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3})")) {
+            return Inet6Address.parse(addrStr);
         } else {
-            throw new ParseException("IP address stringformat not recognised");
+            throw new ParseException("IP address string format not recognised");
         }
     }
 }
