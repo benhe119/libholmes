@@ -144,27 +144,77 @@ public class Inet4Address extends InetAddress {
      * @param addrStr the address as a character string
      */
     public static Inet4Address parse(String addrStr) throws ParseException {
-        String[] parts = addrStr.split("[.]");
-        if (parts.length != 4) {
-            throw new ParseException(
-                "Invalid number of components for IPv4 address");
+        int byteIndex = 0;
+        int byteLength = 4;
+        byte[] bytes = new byte[byteLength];
+        int acc = 0;
+        int digits = 0;
+        int charIndex = 0;
+        int charLength = addrStr.length();
+
+        while (charIndex < charLength) {
+            char c = addrStr.charAt(charIndex);
+            if (c == '.') {
+                if (digits == 0) {
+                    // Empty field not allowed in dotted quad section.
+                    throw new ParseException(
+                        "Invalid empty field in IPv4 address");
+                } else {
+                    // Non-empty field terminated by full stop,
+                    // record value.
+                    if (byteIndex >= byteLength) {
+                        throw new ParseException(
+                            "Too many fields in IPv4 address");
+                    }
+                    if (acc >= 0x100) {
+                        throw new ParseException(
+                            "Value too large in IPv4 address");
+                    }
+                    bytes[byteIndex] = (byte)acc;
+                    byteIndex += 1;
+                    acc = 0;
+                    digits = 0;
+                }
+            } else {
+                if ((c >= '0') && (c <= '9')) {
+                    acc *= 10;
+                    acc += c - '0';
+                } else {
+                    throw new ParseException(
+                        "Invalid character in IPv4 address");
+                }
+                digits += 1;
+                if (digits > 3) {
+                    throw new ParseException(
+                        "Field too long in IPv4 address");
+                }
+            }
+            charIndex += 1;
         }
 
-        byte[] bytes = new byte[4];
-        int index = 0;
-        for (String part : parts) {
-            try {
-                int value = Integer.parseInt(part, 10);
-                if ((value < 0) || (value > 255)) {
-                    throw new ParseException(
-                        "Number out of range for IPv4 address");
-                }
-                bytes[index] = (byte)value;
-                index += 1;
-            } catch (NumberFormatException ex) {
+        if (digits == 0) {
+            // Trailing full stop not allowed.
+            throw new ParseException(
+                "Invalid empty field in IPv4 address");
+        } else {
+            // Non-empty field at end of decimal address, record value.
+            if (byteIndex >= byteLength) {
                 throw new ParseException(
-                    "Invalid number in IPv4 address");
+                    "Too many fields in IPv4 address");
             }
+            if (acc >= 0x100) {
+                throw new ParseException(
+                    "Value too large in IPv4 address");
+            }
+            bytes[byteIndex] = (byte)acc;
+            byteIndex += 1;
+            acc = 0;
+            digits = 0;
+        }
+
+        if (byteIndex < byteLength) {
+            throw new ParseException(
+                "Too few fields in IPv4 address");
         }
 
         return parse(new ArrayOctetString(bytes,
