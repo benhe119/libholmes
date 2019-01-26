@@ -388,4 +388,89 @@ public class Inet4DatagramTest {
             "28292a2b2c2d2e2f3031323334353637",
             json.getString("payload"));
     }
+
+    @Test
+    public void testDuplicate() throws ParseException {
+        Inet4Datagram datagram0 = Inet4Datagram.parse(null,
+            new HexOctetReader(
+                "45000028303900004006c943c0a80002" +
+                "c0a80001001400500000000000000000" +
+                "500220000e2b0000"));
+
+        // Modify the TOS, evil, DF and TTL fields
+        // (and consequently also the checksum):
+        // should still qualify as a duplicate.
+        Inet4Datagram datagram1 = Inet4Datagram.parse(null,
+            new HexOctetReader(
+                "454800283039c0003f0609fbc0a80002" +
+                "c0a80001001400500000000000000000" +
+                "500220000e2b0000"));
+        assertTrue(datagram1.isDuplicate(datagram0));
+        assertTrue(datagram0.isDuplicate(datagram1));
+
+        // Modify the identification field:
+        // not now a duplicate.
+        // Set the MF flag: not now a duplicate.
+        Inet4Datagram datagram2 = Inet4Datagram.parse(null,
+            new HexOctetReader(
+                "45000028303a00004006c942c0a80002" +
+                "c0a80001001400500000000000000000" +
+                "500220000e2b0000"));
+        assertFalse(datagram2.isDuplicate(datagram0));
+        assertFalse(datagram0.isDuplicate(datagram2));
+
+        // Set the MF flag: not now a duplicate.
+        Inet4Datagram datagram3 = Inet4Datagram.parse(null,
+            new HexOctetReader(
+                "45000028303920004006a943c0a80002" +
+                "c0a80001001400500000000000000000" +
+                "500220000e2b0000"));
+        assertFalse(datagram3.isDuplicate(datagram0));
+        assertFalse(datagram0.isDuplicate(datagram3));
+
+        // Change the fragment offset: not now a duplicate.
+        Inet4Datagram datagram4 = Inet4Datagram.parse(null,
+            new HexOctetReader(
+                "45000028303900014006c942c0a80002" +
+                "c0a80001001400500000000000000000" +
+                "500220000e2b0000"));
+        assertFalse(datagram4.isDuplicate(datagram0));
+        assertFalse(datagram0.isDuplicate(datagram4));
+
+        // Change the protocol: not now a duplicate.
+        Inet4Datagram datagram5 = Inet4Datagram.parse(null,
+            new HexOctetReader(
+                "45000028303900004007c942c0a80002" +
+                "c0a80001001400500000000000000000" +
+                "500220000e2a0000"));
+        assertFalse(datagram5.isDuplicate(datagram0));
+        assertFalse(datagram0.isDuplicate(datagram5));
+
+        // Change the source address: not now a duplicate.
+        Inet4Datagram datagram6 = Inet4Datagram.parse(null,
+            new HexOctetReader(
+                "45000028303900004006c942c0a80003" +
+                "c0a80001001400500000000000000000" +
+                "500220000e2a0000"));
+        assertFalse(datagram6.isDuplicate(datagram0));
+        assertFalse(datagram0.isDuplicate(datagram6));
+
+        // Change the destination address: not now a duplicate.
+        Inet4Datagram datagram7 = Inet4Datagram.parse(null,
+            new HexOctetReader(
+                "45000028303900004006c941c0a80002" +
+                "c0a80003001400500000000000000000" +
+                "500220000e290000"));
+        assertFalse(datagram7.isDuplicate(datagram0));
+        assertFalse(datagram0.isDuplicate(datagram7));
+
+        // Change the payload: not now a duplicate.
+        Inet4Datagram datagram8 = Inet4Datagram.parse(null,
+            new HexOctetReader(
+                "45000028303900004006c943c0a80002" +
+                "c0a80001001400500000000000000000" +
+                "500420000e290000"));
+        assertFalse(datagram8.isDuplicate(datagram0));
+        assertFalse(datagram0.isDuplicate(datagram8));
+    }
 }

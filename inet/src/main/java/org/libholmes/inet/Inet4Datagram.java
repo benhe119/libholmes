@@ -17,6 +17,7 @@ import javax.json.JsonArrayBuilder;
 import org.libholmes.OctetReader;
 import org.libholmes.OctetString;
 import org.libholmes.Artefact;
+import org.libholmes.Timestamped;
 import org.libholmes.Logger;
 import org.libholmes.ParseException;
 
@@ -31,6 +32,11 @@ import org.libholmes.ParseException;
  *   question, in the absence of any other defined usage.
  */
 public class Inet4Datagram extends InetDatagram {
+    /** The maximum segment lifetime for a TCP segment.
+     * This is used as a proxy for the maximum lifetime of any IP datagram.
+     */
+    private static final long MSL = 120000000000L;
+
     /** The undecoded header. */
     private final OctetString header;
 
@@ -314,6 +320,90 @@ public class Inet4Datagram extends InetDatagram {
         checksum.add(getProtocol());
         checksum.add(getPayload().length());
         return checksum;
+    }
+
+    /** Test whether this is a presumed duplicate of another datagram.
+     * This method is intended for detecting duplication at the network layer
+     * or below. It is not intended for detecting retransmission at the
+     * transport layer or above, however it may report retransmissions as
+     * duplicates if it is unable to make a distinction.
+     *
+     * To detect all duplication, traffic should be defragmented prior to
+     * comparison. If that has not been done then this method will detect
+     * duplicates of individual fragments which have the same length and
+     * offset, but it does not attempt to detect partial duplicates.
+     *
+     * @param that the datagram to be compared
+     * @return true if a presumed duplicate, otherwise false
+     */
+    public final boolean isDuplicate(Inet4Datagram that) {
+        // See RFC 4302 for a discussion as to which parts of a datagram
+        // are immutable in transit and which are not.
+
+        // Do check the version and IHL fields. (Checking the version is not
+        // strictly necessary, since both datagrams are known to be IPv4,
+        // however it is easier to check both than just one.)
+        if (this.header.getByte(0) != that.header.getByte(0)) {
+            return false;
+        }
+        // Don't check the TOS field, since this can change in transit.
+        // Don't check the total length field, since this will be
+        // implicitly checked when the payloads are compared.
+        // Do check identification field, which is immutable according to
+        // RFC 4302.
+        if (this.header.getShort(4) != that.header.getShort(4)) {
+            return false;
+        }
+        // Do not check the 'evil bit', because (leaving aside RFC 3514)
+        // this would do little to assist with the detection of duplicates
+        // as used currently, and if a new use were defined then it might
+        // not be immutable.
+        // Don't check the DF flag, since RFC 4302 indicates that it could
+        // be set in transit by a router.
+        // Do check the MF flag and the fragment offset, to obtain the
+        // specified behaviour in the presence of fragmentation.
+        if ((this.header.getShort(6) & 0x3fff) !=
+            (that.header.getShort(6) & 0x3fff)) {
+            return false;
+        }
+        // Don't check the TTL field, since this is very likely to change
+        // in transit.
+        // Do check the protocol field.
+        if (this.header.getByte(9) != that.header.getByte(9)) {
+            return false;
+        }
+        // Don't check the checksum field, since this is very likely to
+        // change in transit.
+        // Do check the source IP address.
+        if (this.header.getInt(12) != that.header.getInt(12)) {
+            return false;
+        }
+        // Do check the destination IP address.
+        if (this.header.getInt(16) != that.header.getInt(16)) {
+            return false;
+        }
+        // Don't check the options field as a whole, since some options
+        // could change in transit. It would be possible to check individual
+        // options which do not change, however this is not currently
+        // implemented.
+        // Do check the payloads.
+        if (!this.payload.equals(that.payload)) {
+            return false;
+        }
+
+        // If the datagrams are timestamped then do check that the difference
+        // is no greater than the TCP maximum segment lifetime, which is used
+        // as a proxy here for the maximum lifetime of any IP datagram.
+        Timestamped thisTs = this.find(Timestamped.class);
+        Timestamped thatTs = that.find(Timestamped.class);
+        if ((thisTs != null) && (thatTs != null)) {
+            long diff = thisTs.getTimestamp() - thatTs.getTimestamp();
+            if ((diff < -MSL) || (diff > MSL)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /** Parse IPv4 datagram from an OctetReader.
