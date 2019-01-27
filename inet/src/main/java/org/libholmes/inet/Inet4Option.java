@@ -179,6 +179,15 @@ public abstract class Inet4Option extends Artefact {
                 case OPTION_NOP:
                     option = new Inet4NoOperationOption(option);
                     break;
+                case OPTION_LSR:
+                    option = new Inet4LooseSourceRouteOption(option);
+                    break;
+                case OPTION_RR:
+                    option = new Inet4RecordRouteOption(option);
+                    break;
+                case OPTION_SSR:
+                    option = new Inet4StrictSourceRouteOption(option);
+                    break;
             }
         } catch (Exception ex) {
             // Failed to parse option as a specific type,
