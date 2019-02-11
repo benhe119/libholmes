@@ -50,7 +50,7 @@ public class CompositeFingerprint extends Fingerprint {
     @Override
     public final boolean matches(Artefact artefact, OctetPatternContext context) {
         for (Fingerprint fingerprint : fingerprints) {
-            if (!fingerprint.matches(artefact)) {
+            if (!fingerprint.matches(artefact, context)) {
                 return false;
             }
         }
