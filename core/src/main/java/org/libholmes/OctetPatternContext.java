@@ -9,8 +9,30 @@ import java.util.HashSet;
 
 /** A class for providing information to context-dependent patterns. */
 public class OctetPatternContext {
+    /** The resolver.
+     * This must always be non-null.
+     */
+    private Resolver resolver = NullResolver.getInstance();
+
     /** The set of recognised host identifiers. */
     private final HashSet hostIdentifiers = new HashSet();
+
+    /** Set the resolver to be used for mapping hostnames and addresses.
+     * @param resolver the required resolver, or null for the null resolver
+     */
+    public final void setResolver(Resolver resolver) {
+        if (resolver == null) {
+            resolver = NullResolver.getInstance();
+        }
+        this.resolver = resolver;
+    }
+
+    /** Get the resolver to be used for mapping hostnames and addresses.
+     * @return the resolver
+     */
+    public final Resolver getResolver() {
+        return resolver;
+    }
 
     /** Add a recognised host identifier.
      * This would typically be a domain name or a network address,
