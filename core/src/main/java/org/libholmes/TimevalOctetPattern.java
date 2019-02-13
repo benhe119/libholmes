@@ -37,7 +37,7 @@ public class TimevalOctetPattern extends OctetPattern {
 
     @Override
     public final boolean matches(OctetReader reader,
-        OctetPatternContext context) {
+        AnalysisContext context) {
 
         int savedByteOrder = reader.getByteOrder();
         reader.setByteOrder(byteOrder);

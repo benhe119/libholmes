@@ -25,7 +25,7 @@ public class WildcardOctetPattern extends OctetPattern {
 
     @Override
     public final boolean matches(OctetReader reader,
-        OctetPatternContext context) {
+        AnalysisContext context) {
 
         if (reader.remaining() < length) {
             return false;

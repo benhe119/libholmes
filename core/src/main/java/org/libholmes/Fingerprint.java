@@ -46,8 +46,7 @@ public abstract class Fingerprint {
 
    /** An empty pattern matching context, for use when one has not been
      * supplied. */
-    private static final OctetPatternContext emptyContext =
-        new OctetPatternContext();
+    private static final AnalysisContext emptyContext = new AnalysisContext();
 
     /** Determine whether this fingerprint matches a given artefact.
      * @param artefact to be matched
@@ -55,7 +54,7 @@ public abstract class Fingerprint {
      * @return true if the artefact matched, otherwise false
      */
     public abstract boolean matches(Artefact artefact,
-        OctetPatternContext context);
+        AnalysisContext context);
 
     /** Determine whether this fingerprint matches a given artefact.
      * This is a convenience method for when there is no supplied context.

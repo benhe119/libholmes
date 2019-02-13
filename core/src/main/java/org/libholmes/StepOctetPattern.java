@@ -90,7 +90,7 @@ public class StepOctetPattern extends OctetPattern {
 
     @Override
     public final boolean matches(OctetReader reader,
-        OctetPatternContext context) {
+        AnalysisContext context) {
 
         int count = 0;
         long value = init;

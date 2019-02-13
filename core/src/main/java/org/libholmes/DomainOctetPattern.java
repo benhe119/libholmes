@@ -20,7 +20,7 @@ public class DomainOctetPattern extends OctetPattern {
 
     @Override
     public final boolean matches(OctetReader reader,
-        OctetPatternContext context) {
+        AnalysisContext context) {
 
         int index = 0;
         int limit = reader.remaining();

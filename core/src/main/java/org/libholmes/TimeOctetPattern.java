@@ -60,7 +60,7 @@ public class TimeOctetPattern extends OctetPattern {
 
     @Override
     public final boolean matches(OctetReader reader,
-        OctetPatternContext context) {
+        AnalysisContext context) {
 
         if (reader.remaining() * 8 < width * divisors.size()) {
             return false;

@@ -27,7 +27,7 @@ public class SequenceOctetPattern extends OctetPattern {
 
     @Override
     public final boolean matches(OctetReader reader,
-        OctetPatternContext context) {
+        AnalysisContext context) {
 
         for (OctetPattern pattern : patterns) {
             if (!pattern.matches(reader, context)) {

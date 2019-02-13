@@ -7,8 +7,12 @@ package org.libholmes;
 
 import java.util.HashSet;
 
-/** A class for providing information to context-dependent patterns. */
-public class OctetPatternContext {
+/** A class for providing background context for use during analysis.
+ * This includes:
+ * - Mappings between hostnames and network addresses
+ * - Recognition of notable host identifiers
+ */
+public class AnalysisContext {
     /** The resolver.
      * This must always be non-null.
      */

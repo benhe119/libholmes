@@ -37,7 +37,7 @@ public class HexOctetPattern extends OctetPattern {
 
     @Override
     public final boolean matches(OctetReader reader,
-        OctetPatternContext context) {
+        AnalysisContext context) {
 
         if (repeat) {
             int index = 0;

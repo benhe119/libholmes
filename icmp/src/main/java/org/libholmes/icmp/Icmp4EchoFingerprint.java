@@ -10,7 +10,7 @@ import javax.json.JsonObject;
 
 import org.libholmes.OctetReader;
 import org.libholmes.OctetPattern;
-import org.libholmes.OctetPatternContext;
+import org.libholmes.AnalysisContext;
 import org.libholmes.Artefact;
 import org.libholmes.Fingerprint;
 
@@ -52,7 +52,7 @@ public class Icmp4EchoFingerprint extends Fingerprint {
      * @param context the pattern matching context
      * @return true if fingerprint matches, otherwise false
      */
-    public final boolean matches(Artefact artefact, OctetPatternContext context) {
+    public final boolean matches(Artefact artefact, AnalysisContext context) {
         Icmp4Message message = artefact.find(Icmp4Message.class);
         if (message == null) {
             return false;

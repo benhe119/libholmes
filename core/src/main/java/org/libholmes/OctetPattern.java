@@ -49,10 +49,8 @@ public abstract class OctetPattern {
         registerType("inet", "org.libholmes.inet.InetAddressOctetPattern");
     }
 
-    /** An empty pattern matching context, for use when one has not been
-     * supplied. */
-    private static final OctetPatternContext emptyContext =
-        new OctetPatternContext();
+    /** An empty analysis context, for use when one has not been supplied. */
+    private static final AnalysisContext emptyContext = new AnalysisContext();
 
     /** Determine whether this pattern matches a given sequence of octets.
      * If it is able to, this method will reade a maximal-length sequence of
@@ -64,7 +62,7 @@ public abstract class OctetPattern {
      * @return true if the octet sequence matched, otherwise false
      */
     public abstract boolean matches(OctetReader octets,
-        OctetPatternContext context);
+        AnalysisContext context);
 
     /** Determine whether this pattern matches a given sequence of octets.
      * This is a convenience method for when there is no supplied context.

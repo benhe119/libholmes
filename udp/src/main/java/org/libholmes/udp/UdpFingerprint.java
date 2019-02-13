@@ -10,7 +10,7 @@ import javax.json.JsonObject;
 
 import org.libholmes.OctetReader;
 import org.libholmes.OctetPattern;
-import org.libholmes.OctetPatternContext;
+import org.libholmes.AnalysisContext;
 import org.libholmes.Artefact;
 import org.libholmes.Fingerprint;
 
@@ -40,7 +40,7 @@ public class UdpFingerprint extends Fingerprint {
     }
 
     @Override
-    public final boolean matches(Artefact artefact, OctetPatternContext context) {
+    public final boolean matches(Artefact artefact, AnalysisContext context) {
         UdpDatagram datagram = artefact.find(UdpDatagram.class);
         if (datagram == null) {
             return false;

@@ -9,7 +9,7 @@ import javax.json.JsonObject;
 
 import org.libholmes.OctetReader;
 import org.libholmes.OctetPattern;
-import org.libholmes.OctetPatternContext;
+import org.libholmes.AnalysisContext;
 
 /** An OctetPattern class to match an IP address. */
 public class InetAddressOctetPattern extends OctetPattern {
@@ -20,7 +20,7 @@ public class InetAddressOctetPattern extends OctetPattern {
 
     @Override
     public final boolean matches(OctetReader reader,
-        OctetPatternContext context) {
+        AnalysisContext context) {
 
         if (reader.remaining() < 4) {
             return false;

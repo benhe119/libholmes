@@ -9,7 +9,7 @@ import javax.json.JsonObject;
 
 import org.libholmes.OctetReader;
 import org.libholmes.OctetPattern;
-import org.libholmes.OctetPatternContext;
+import org.libholmes.AnalysisContext;
 import org.libholmes.Artefact;
 import org.libholmes.Fingerprint;
 import org.libholmes.ParseException;
@@ -68,7 +68,7 @@ public class Inet4Fingerprint extends Fingerprint {
      * @param context the pattern matching context
      * @return true if fingerprint matches, otherwise false
      */
-    public final boolean matches(Artefact artefact, OctetPatternContext context) {
+    public final boolean matches(Artefact artefact, AnalysisContext context) {
         Inet4Datagram datagram = artefact.find(Inet4Datagram.class);
         if (datagram == null) {
             return false;

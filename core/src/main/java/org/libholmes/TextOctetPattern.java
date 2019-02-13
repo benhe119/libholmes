@@ -26,7 +26,7 @@ public class TextOctetPattern extends OctetPattern {
 
     @Override
     public final boolean matches(OctetReader reader,
-        OctetPatternContext context) {
+        AnalysisContext context) {
 
         if (reader.remaining() < pattern.length()) {
             return false;
