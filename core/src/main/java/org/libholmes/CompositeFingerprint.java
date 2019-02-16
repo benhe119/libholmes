@@ -33,7 +33,13 @@ public class CompositeFingerprint extends Fingerprint {
                 Fingerprint fingerprint = Fingerprint.parse(
                     entry.getKey(), (JsonObject) entry.getValue());
                 fingerprints.add(fingerprint);
-            } else if (!entry.getKey().equals("_id")) {
+            } else if (entry.getKey().equals("_id")) {
+                // No action
+            } else if (entry.getKey().equals("description")) {
+                // No action
+            } else if (entry.getKey().equals("attribution")) {
+                // No action
+            } else {
                 throw new IllegalArgumentException(
                     "fingerprint specification must be JSON object");
             }
