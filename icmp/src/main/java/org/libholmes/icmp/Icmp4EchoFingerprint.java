@@ -6,6 +6,7 @@
 package org.libholmes.icmp;
 
 import java.net.InetAddress;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 
 import org.libholmes.OctetReader;
@@ -40,9 +41,9 @@ public class Icmp4EchoFingerprint extends Fingerprint {
         lengthSuffix = json.getBoolean("lengthSuffix", false);
         checksum = json.containsKey("checksum") ?
             new Integer(json.getInt("checksum")): null;
-        identifier = json.containsKey("identifier") ?
+        identifier = (json.get("identifier") instanceof JsonNumber) ?
             new Integer(json.getInt("identifier")) : null;
-        sequenceNumber = json.containsKey("sequenceNumber") ?
+        sequenceNumber = (json.get("sequenceNumber") instanceof JsonNumber) ?
             new Integer(json.getInt("sequenceNumber")) : null;
         dataPattern = OctetPattern.parse(json.get("data"));
     }
