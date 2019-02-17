@@ -5,10 +5,13 @@
 
 package org.libholmes;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Collections;
 
 import javax.json.JsonValue;
+import javax.json.JsonString;
 import javax.json.JsonObject;
 
 /** A class to represent a fingerprint able to cover multiple protocols.
@@ -19,6 +22,11 @@ public class CompositeFingerprint extends Fingerprint {
     /** The unique ID of this fingerprint. */
     private final String id;
 
+    /** The unique IDs of any fingerprints which match a subset of the
+     * features of this one.
+     */
+    private final List<String> exclude;
+
     /** A list of fingerprints to be checked. */
     private final ArrayList<Fingerprint> fingerprints =
         new ArrayList<Fingerprint>();
@@ -27,13 +35,25 @@ public class CompositeFingerprint extends Fingerprint {
      * @param jsonSpec the fingerprint, as JSON
      */
     public CompositeFingerprint(JsonObject jsonSpec) {
-        id = jsonSpec.getString("_id");
+        this.id = jsonSpec.getString("_id");
+
+        ArrayList<String> exclude = new ArrayList<String>();
+        if (jsonSpec.containsKey("exclude")) {
+            for (JsonValue jsonExcludeId : jsonSpec.getJsonArray("exclude")) {
+                String excludeId = ((JsonString) jsonExcludeId).getString();
+                exclude.add(excludeId);
+            }
+        }
+        this.exclude = Collections.unmodifiableList(exclude);
+
         for (Map.Entry<String, JsonValue> entry : jsonSpec.entrySet()) {
             if (entry.getValue() instanceof JsonObject) {
                 Fingerprint fingerprint = Fingerprint.parse(
                     entry.getKey(), (JsonObject) entry.getValue());
                 fingerprints.add(fingerprint);
             } else if (entry.getKey().equals("_id")) {
+                // No action
+            } else if (entry.getKey().equals("exclude")) {
                 // No action
             } else if (entry.getKey().equals("description")) {
                 // No action
@@ -51,6 +71,14 @@ public class CompositeFingerprint extends Fingerprint {
      */
     public final String getId() {
         return id;
+    }
+
+    /** Get the unique IDs of any fingerprints which match a subset of the
+     * features of this one.
+     * @return the list of unique IDs
+     */
+    public final List<String> getExclude() {
+        return exclude;
     }
 
     @Override
