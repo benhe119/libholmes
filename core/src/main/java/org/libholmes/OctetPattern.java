@@ -41,6 +41,7 @@ public abstract class OctetPattern {
     static {
         registerType("hex", "org.libholmes.HexOctetPattern");
         registerType("wildcard", "org.libholmes.WildcardOctetPattern");
+        registerType("random", "org.libholmes.RandomOctetPattern");
         registerType("text", "org.libholmes.TextOctetPattern");
         registerType("timeval", "org.libholmes.TimevalOctetPattern");
         registerType("time", "org.libholmes.TimeOctetPattern");
