@@ -13,6 +13,7 @@ import java.util.Collections;
 import javax.json.JsonValue;
 import javax.json.JsonString;
 import javax.json.JsonObject;
+import javax.json.JsonArray;
 
 /** A class to represent a fingerprint able to cover multiple protocols.
  * The composite fingerprint matches if and only if all of the fingerprints
@@ -38,12 +39,22 @@ public class CompositeFingerprint extends Fingerprint {
         this.id = jsonSpec.getString("_id");
 
         ArrayList<String> exclude = new ArrayList<String>();
-        if (jsonSpec.containsKey("exclude")) {
-            for (JsonValue jsonExcludeId : jsonSpec.getJsonArray("exclude")) {
+        JsonValue jsonExcludeSpec = jsonSpec.get("exclude");
+        if (jsonExcludeSpec == null) {
+            // No action.
+        } else if (jsonExcludeSpec instanceof JsonString) {
+            String excludeId = ((JsonString) jsonExcludeSpec).getString();
+            exclude.add(excludeId);
+        } else if (jsonExcludeSpec instanceof JsonArray) {
+            for (JsonValue jsonExcludeId : ((JsonArray) jsonExcludeSpec)) {
                 String excludeId = ((JsonString) jsonExcludeId).getString();
                 exclude.add(excludeId);
             }
+        } else {
+            throw new IllegalArgumentException(
+                "fingerprint exclude attribute must be JSON list or string");
         }
+
         this.exclude = Collections.unmodifiableList(exclude);
 
         for (Map.Entry<String, JsonValue> entry : jsonSpec.entrySet()) {
