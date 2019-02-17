@@ -5,12 +5,17 @@
 
 package org.libholmes.inet;
 
+import java.util.List;
+import java.util.regex.Pattern;
+
 import javax.json.JsonObject;
 
 import org.libholmes.OctetReader;
 import org.libholmes.OctetPattern;
 import org.libholmes.AnalysisContext;
 import org.libholmes.Artefact;
+import org.libholmes.Timestamped;
+import org.libholmes.AddressMapping;
 import org.libholmes.Fingerprint;
 import org.libholmes.ParseException;
 
@@ -45,6 +50,11 @@ public class Inet4Fingerprint extends Fingerprint {
      */
     private final InetNetblock addr;
 
+    /** A regular expression which the source address must match, or
+     * null for any hostname.
+     */
+    private final Pattern hostnamePattern;
+
     /** Construct IPv4 fingerprint from JSON.
      * @param json the fingerprint, as JSON
      */
@@ -61,6 +71,8 @@ public class Inet4Fingerprint extends Fingerprint {
             OctetPattern.parse(json.get("payload")) : null;
         addr = json.containsKey("addr") ?
             InetNetblock.parse(json.getString("addr")) : null;
+        hostnamePattern = json.containsKey("hostname") ?
+            Pattern.compile(json.getString("hostname")) : null;
     }
 
     /** Determine whether this fingerprint matches a given IPv4 datagram.
@@ -100,6 +112,21 @@ public class Inet4Fingerprint extends Fingerprint {
         }
         if (addr != null) {
             if (!addr.contains(datagram.getSrcAddr())) {
+                return false;
+            }
+        }
+        if (hostnamePattern != null) {
+            boolean found = false;
+            List<AddressMapping> mappings = context.getResolver().find(
+                datagram.getSrcAddr(),
+                datagram.find(Timestamped.class).getTimestamp());
+            for (AddressMapping mapping : mappings) {
+                if (hostnamePattern.matcher(mapping.getHostname()).matches()) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
                 return false;
             }
         }
