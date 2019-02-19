@@ -118,6 +118,9 @@ public abstract class Icmp4Message extends Artefact {
                 case 4:
                     message = new Icmp4SourceQuenchMessage(message);
                     break;
+                case 5:
+                    message = new Icmp4RedirectMessage(message);
+                    break;
                 case 8:
                     message = new Icmp4EchoMessage(message);
                     break;
