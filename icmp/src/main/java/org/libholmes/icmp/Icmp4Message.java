@@ -1,5 +1,5 @@
 // This file is part of libholmes.
-// Copyright 2018 Graham Shaw.
+// Copyright 2018-2019 Graham Shaw.
 // Distribution and modification are permitted within the terms of the
 // GNU General Public License (version 3 or any later version).
 
@@ -111,6 +111,9 @@ public abstract class Icmp4Message extends Artefact {
             switch (message.getType()) {
                 case 0:
                     message = new Icmp4EchoReplyMessage(message);
+                    break;
+                case 3:
+                    message = new Icmp4DestinationUnreachableMessage(message);
                     break;
                 case 8:
                     message = new Icmp4EchoMessage(message);
