@@ -127,6 +127,9 @@ public abstract class Icmp4Message extends Artefact {
                 case 11:
                     message = new Icmp4TimeExceededMessage(message);
                     break;
+                case 12:
+                    message = new Icmp4ParameterProblemMessage(message);
+                    break;
             }
         } catch (ParseException ex) {
             // No action: fall back to Icmp4UnrecognisedMessage.
