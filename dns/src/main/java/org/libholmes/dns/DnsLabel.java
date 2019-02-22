@@ -5,6 +5,8 @@
 
 package org.libholmes.dns;
 
+import java.util.HashSet;
+
 import org.libholmes.OctetReader;
 import org.libholmes.ParseException;
 
@@ -40,15 +42,22 @@ public abstract class DnsLabel {
 
     /** Parse domain name label from OctetReader.
      * @param reader the OctetReader to be parsed
+     * @param ptrReader an OctetReader positioned at the start of the message
+     * @param offsets pointer offsets that were followed to reach this label
      * @throws ParseException if the octet sequence could not be parsed
      */
-    public static DnsLabel parse(OctetReader reader) throws ParseException {
+    public static DnsLabel parse(OctetReader reader, OctetReader ptrReader,
+        HashSet<Integer> offsets) throws ParseException {
+
         OctetReader labelReader = reader;
         int type = labelReader.peekByte(0) & 0xff;
         switch (type & 0xc0) {
             case 0x00:
                 // Text label.
                 return new DnsTextLabel(reader);
+            case 0xc0:
+                // Compressed label.
+                return new DnsCompressedLabel(reader, ptrReader, offsets);
             default:
                 throw new ParseException(String.format(
                     "unrecognised DNS label type %02X", type));
