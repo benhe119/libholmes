@@ -5,6 +5,9 @@
 
 package org.libholmes.dns;
 
+import org.libholmes.OctetReader;
+import org.libholmes.ParseException;
+
 /** An abstract base class to represent a label within a DNS domain name. */
 public abstract class DnsLabel {
     /** Get the length of this label.
@@ -33,5 +36,22 @@ public abstract class DnsLabel {
         StringBuilder builder = new StringBuilder();
         buildString(builder);
         return builder.toString();
+    }
+
+    /** Parse domain name label from OctetReader.
+     * @param reader the OctetReader to be parsed
+     * @throws ParseException if the octet sequence could not be parsed
+     */
+    public static DnsLabel parse(OctetReader reader) throws ParseException {
+        OctetReader labelReader = reader;
+        int type = labelReader.peekByte(0) & 0xff;
+        switch (type & 0xc0) {
+            case 0x00:
+                // Text label.
+                return new DnsTextLabel(reader);
+            default:
+                throw new ParseException(String.format(
+                    "unrecognised DNS label type %02X", type));
+        }
     }
 }
