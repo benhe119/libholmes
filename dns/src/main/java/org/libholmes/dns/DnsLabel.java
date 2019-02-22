@@ -10,7 +10,11 @@ import java.util.HashSet;
 import org.libholmes.OctetReader;
 import org.libholmes.ParseException;
 
-/** An abstract base class to represent a label within a DNS domain name. */
+/** An abstract base class to represent a label within a DNS domain name.
+ * See the class DnsDomainName for details of the escaping scheme used when
+ * converting a label to text. Note also that during such conversion, one
+ * instance of this class may expand to multiple domain name labels.
+ */
 public abstract class DnsLabel {
     /** Get the length of this label.
      * This is the contribution made by this label towards the limit of 255
