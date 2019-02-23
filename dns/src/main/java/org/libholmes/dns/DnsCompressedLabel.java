@@ -45,6 +45,54 @@ public class DnsCompressedLabel extends DnsLabel {
         }
     }
 
+    /** Get the label at a given physical index.
+     * @param index the physical index
+     * @return the corresponding label
+     */
+    public final DnsLabel getRawLabel(int index) {
+        return labels.get(index);
+    }
+
+    /** Get the number of physical labels.
+     * @return the number of physical labels
+     */
+    public final int getRawLabelCount() {
+        return labels.size();
+    }
+
+    /** Get the label at a given logical index.
+     * @param index the logical index
+     * @return the corresponding label
+     */
+    public final DnsLabel getLabel(int index) {
+        int lastLabelIndex = labels.size() - 1;
+        if (index >= lastLabelIndex) {
+            DnsLabel lastLabel = labels.get(lastLabelIndex);
+            if (lastLabel instanceof DnsCompressedLabel) {
+                DnsCompressedLabel compressedLabel =
+                    (DnsCompressedLabel) lastLabel;
+                return compressedLabel.getLabel(index - lastLabelIndex);
+            }
+        }
+        return labels.get(index);
+    }
+
+    /** Get the number of logical labels.
+     * @return the number of logical labels
+     */
+    public final int getLabelCount() {
+        int lastLabelIndex = labels.size() - 1;
+        if (lastLabelIndex >= 0) {
+            DnsLabel lastLabel = labels.get(lastLabelIndex);
+            if (lastLabel instanceof DnsCompressedLabel) {
+                DnsCompressedLabel compressedLabel =
+                    (DnsCompressedLabel) lastLabel;
+                return lastLabelIndex + compressedLabel.getLabelCount();
+            }
+        }
+        return labels.size();
+    }
+
     @Override
     public final int length() {
         int len = 0;
