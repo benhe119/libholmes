@@ -144,9 +144,6 @@ public class DnsDomainName {
             }
             label.buildString(builder);
         }
-        if (builder.length() == 0) {
-            builder.append(".");
-        }
         return builder.toString();
     }
 }
