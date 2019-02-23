@@ -26,6 +26,7 @@
     <module>tcp</module>
     <module>udp</module>
     <module>dns</module>
+    <module>netbios-ns</module>
   </modules>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
