@@ -42,6 +42,30 @@ public class RandomOctetPattern extends OctetPattern {
         return sum / Math.pow(2, n);
     }
 
+    /** Calculate two-tail p-value for binomial distribution.
+     * This gives the probability of k deviating from the expected value
+     * to the observed extent or greater if it is assumed that the bits
+     * originate from a random source.
+     * @param n the number of bits
+     * @param k the number of ones
+     * @return the corresponding p-value
+     */
+    private static final double twoTailBinomial(int n, int k) {
+        // Use symmetry to fold upper tail onto lower tail.
+        if (2 * k > n) {
+            k = n - k;
+        }
+        if (2 * k == n) {
+            // Special case needed to avoid double-counting if the count
+            // is exactly equal to the expected value.
+            return 1.0;
+        } else {
+            // Return probability, doubling due to two tails having been
+            // folded into one.
+            return 2 * cumulativeBinomial(n, k);
+        }
+    }
+
     /** Apply monobit test.
      * Each bit position is tested individually. In the current
      * implementation, the probability threshold is set at 0.001.
@@ -54,10 +78,7 @@ public class RandomOctetPattern extends OctetPattern {
                 int bit = (data[j] >> i) & 1;
                 count += bit;
             }
-            if (2 * count > data.length) {
-                count = data.length - count;
-            }
-            double p = cumulativeBinomial(data.length, count);
+            double p = twoTailBinomial(data.length, count);
             if (p < 0.001) {
                 return false;
             }
