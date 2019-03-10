@@ -17,14 +17,27 @@ import org.libholmes.Fingerprint;
 import org.libholmes.Matcher;
 
 public class Icmp4EchoFingerprint extends Fingerprint {
+    /** A constant used to indicate little-endian byte order. */
+    public static final int LITTLE_ENDIAN = 0;
+
+    /** A constant used to indicate big-endian byte order. */
+    public static final int BIG_ENDIAN = -1;
+
     /** A constant to indicate that the identifier may take any value,
-     * with no constraint between related messages.
-     */
+     * with no constraint between related messages. */
     private final int IDENT_ANY = -1;
 
     /** A constant to indicate that the identifier may take any value,
      * but that related messages must have the same value. */
     private final int IDENT_FIXED = -2;
+
+    /** A constant to indicate that the sequence number may take any value,
+     * with no constraint between related messages. */
+    private final int SN_ANY = -1;
+
+    /** A constant to indicate that the sequence number should increment
+     * for each message sent. */
+    private final int SN_STEP = -2;
 
     /** True if length suffix appended to ID, otherwise false. */
     private final boolean lengthSuffix;
@@ -39,7 +52,10 @@ public class Icmp4EchoFingerprint extends Fingerprint {
     private final int identifier;
 
     /** The sequence number which must be matched, or null for any value. */
-    private final Integer sequenceNumber;
+    private final int sequenceNumber;
+
+    /** The byte order of the sequence number. */
+    private final int sequenceByteOrder;
 
     /** The pattern which the data field must match in full. */
     private final OctetPattern dataPattern;
@@ -56,11 +72,7 @@ public class Icmp4EchoFingerprint extends Fingerprint {
             JsonObject identSpec = json.getJsonObject("identifier");
             String identType = identSpec.getString("type");
             if (identType.equals("fixed") || identType.equals("pid")) {
-                if (identSpec.containsKey("value")) {
-                    identifier = identSpec.getInt("value");
-                } else {
-                    identifier = IDENT_FIXED;
-                }
+                identifier = identSpec.getInt("value", IDENT_FIXED);
             } else {
                 identifier = IDENT_ANY;
             }
@@ -68,8 +80,28 @@ public class Icmp4EchoFingerprint extends Fingerprint {
             identifier = IDENT_ANY;
         }
 
-        sequenceNumber = (json.get("sequenceNumber") instanceof JsonNumber) ?
-            new Integer(json.getInt("sequenceNumber")) : null;
+        if (json.containsKey("sequenceNumber")) {
+            JsonObject snSpec = json.getJsonObject("sequenceNumber");
+            String snType = snSpec.getString("type");
+            if (snType.equals("step")) {
+                sequenceNumber = SN_STEP;
+            } else {
+                sequenceNumber = SN_ANY;
+            }
+            String byteOrderString = snSpec.getString("byteOrder", "");
+            if (byteOrderString.equals("") || byteOrderString.equals("network")) {
+                sequenceByteOrder = BIG_ENDIAN;
+            } else if (byteOrderString.equals("host")) {
+                sequenceByteOrder = LITTLE_ENDIAN;
+            } else {
+                throw new RuntimeException(
+                    "invalid byteOrder for Icmp4EchoFingerprint");
+            }
+        } else {
+            sequenceNumber = SN_ANY;
+            sequenceByteOrder = BIG_ENDIAN;
+        }
+
         dataPattern = OctetPattern.parse(json.get("data"));
     }
 
@@ -92,7 +124,7 @@ public class Icmp4EchoFingerprint extends Fingerprint {
             if ((identifier >= 0) && (request.getIdentifier() != identifier)) {
                 return false;
             }
-            if ((sequenceNumber != null) && (request.getSequenceNumber() != sequenceNumber)) {
+            if ((sequenceNumber >= 0) && (request.getSequenceNumber() != sequenceNumber)) {
                 return false;
             }
             OctetReader reader = request.getData().makeOctetReader();
@@ -107,7 +139,7 @@ public class Icmp4EchoFingerprint extends Fingerprint {
             if ((identifier >= 0) && (reply.getIdentifier() != identifier)) {
                 return false;
             }
-            if ((sequenceNumber != null) && (reply.getSequenceNumber() != sequenceNumber)) {
+            if ((sequenceNumber >= 0) && (reply.getSequenceNumber() != sequenceNumber)) {
                 return false;
             }
             OctetReader reader = reply.getData().makeOctetReader();
@@ -129,6 +161,12 @@ public class Icmp4EchoFingerprint extends Fingerprint {
         if (identifier == IDENT_FIXED) {
             identMatcher = new Icmp4EchoFixedIdentifierMatcher();
         }
-        return new Icmp4EchoMatcher(identMatcher);
+
+        Matcher snMatcher = null;
+        if (sequenceNumber == SN_STEP) {
+            snMatcher = new Icmp4EchoStepSequenceMatcher(sequenceByteOrder);
+        }
+
+        return new Icmp4EchoMatcher(identMatcher, snMatcher);
     }
 }
