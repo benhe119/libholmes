@@ -98,4 +98,9 @@ public class Signature extends Fingerprint {
         }
         return true;
     }
+
+    @Override
+    public final Matcher createMatcher() {
+        return new SignatureMatcher(fingerprints);
+    }
 }
