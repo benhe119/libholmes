@@ -65,6 +65,17 @@ public abstract class Fingerprint {
         return matches(artefact, emptyContext);
     }
 
+    /** Create a matcher object for this fingerprint.
+     * If the fingerprint places constraints on sequences of artefacts,
+     * over and above those which apply to single artefacts, then it should
+     * return a matcher object for testing those constraints. If it does
+     * not then the default behaviour is to return null.
+     * @return the matcher object, or null if not applicable
+     */
+    public Matcher createMatcher() {
+        return null;
+    }
+
     /** Parse fingerprint from a specification in JSON format.
      * @param typeName the name of the fingerprint type to be parsed
      * @param jsonSpec the specification to be parsed
