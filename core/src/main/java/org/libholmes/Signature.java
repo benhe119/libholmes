@@ -15,15 +15,12 @@ import javax.json.JsonString;
 import javax.json.JsonObject;
 import javax.json.JsonArray;
 
-/** A class to represent a fingerprint able to cover multiple protocols.
- * The composite fingerprint matches if and only if all of the fingerprints
- * for the individual protocols also match.
- */
-public class CompositeFingerprint extends Fingerprint {
-    /** The unique ID of this fingerprint. */
+/** A class which associates a set of fingerprints with a source. */
+public class Signature extends Fingerprint {
+    /** The unique ID of this signature. */
     private final String id;
 
-    /** The unique IDs of any fingerprints which match a subset of the
+    /** The unique IDs of any signatures which match a subset of the
      * features of this one.
      */
     private final List<String> exclude;
@@ -32,10 +29,10 @@ public class CompositeFingerprint extends Fingerprint {
     private final ArrayList<Fingerprint> fingerprints =
         new ArrayList<Fingerprint>();
 
-    /** Construct composite fingerprint from JSON.
-     * @param jsonSpec the fingerprint, as JSON
+    /** Construct signature from JSON.
+     * @param jsonSpec the signature, as JSON
      */
-    public CompositeFingerprint(JsonObject jsonSpec) {
+    public Signature(JsonObject jsonSpec) {
         this.id = jsonSpec.getString("_id");
 
         ArrayList<String> exclude = new ArrayList<String>();
@@ -52,7 +49,7 @@ public class CompositeFingerprint extends Fingerprint {
             }
         } else {
             throw new IllegalArgumentException(
-                "fingerprint exclude attribute must be JSON list or string");
+                "signature exclude attribute must be JSON list or string");
         }
 
         this.exclude = Collections.unmodifiableList(exclude);
@@ -72,19 +69,19 @@ public class CompositeFingerprint extends Fingerprint {
                 // No action
             } else {
                 throw new IllegalArgumentException(
-                    "fingerprint specification must be JSON object");
+                    "signature specification must be JSON object");
             }
         }
     }
 
-    /** Get the unique ID of this fingerprint.
+    /** Get the unique ID of this signature.
      * @return the unique ID
      */
     public final String getId() {
         return id;
     }
 
-    /** Get the unique IDs of any fingerprints which match a subset of the
+    /** Get the unique IDs of any signatures which match a subset of the
      * features of this one.
      * @return the list of unique IDs
      */
