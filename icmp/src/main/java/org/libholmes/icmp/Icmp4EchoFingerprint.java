@@ -14,8 +14,18 @@ import org.libholmes.OctetPattern;
 import org.libholmes.AnalysisContext;
 import org.libholmes.Artefact;
 import org.libholmes.Fingerprint;
+import org.libholmes.Matcher;
 
 public class Icmp4EchoFingerprint extends Fingerprint {
+    /** A constant to indicate that the identifier may take any value,
+     * with no constraint between related messages.
+     */
+    private final int IDENT_ANY = -1;
+
+    /** A constant to indicate that the identifier may take any value,
+     * but that related messages must have the same value. */
+    private final int IDENT_FIXED = -2;
+
     /** True if length suffix appended to ID, otherwise false. */
     private final boolean lengthSuffix;
 
@@ -25,8 +35,8 @@ public class Icmp4EchoFingerprint extends Fingerprint {
      */
     private final Integer checksum;
 
-    /** The identifier which must be matched, or null for any value. */
-    private final Integer identifier;
+    /** The identifier which must be matched, or an IDENT_ constant. */
+    private final int identifier;
 
     /** The sequence number which must be matched, or null for any value. */
     private final Integer sequenceNumber;
@@ -41,8 +51,23 @@ public class Icmp4EchoFingerprint extends Fingerprint {
         lengthSuffix = json.getBoolean("lengthSuffix", false);
         checksum = json.containsKey("checksum") ?
             new Integer(json.getInt("checksum")): null;
-        identifier = (json.get("identifier") instanceof JsonNumber) ?
-            new Integer(json.getInt("identifier")) : null;
+
+        if (json.containsKey("identifier")) {
+            JsonObject identSpec = json.getJsonObject("identifier");
+            String identType = identSpec.getString("type");
+            if (identType.equals("fixed") || identType.equals("pid")) {
+                if (identSpec.containsKey("value")) {
+                    identifier = identSpec.getInt("value");
+                } else {
+                    identifier = IDENT_FIXED;
+                }
+            } else {
+                identifier = IDENT_ANY;
+            }
+        } else {
+            identifier = IDENT_ANY;
+        }
+
         sequenceNumber = (json.get("sequenceNumber") instanceof JsonNumber) ?
             new Integer(json.getInt("sequenceNumber")) : null;
         dataPattern = OctetPattern.parse(json.get("data"));
@@ -64,7 +89,7 @@ public class Icmp4EchoFingerprint extends Fingerprint {
         }
         if (message instanceof Icmp4EchoMessage) {
             Icmp4EchoMessage request = (Icmp4EchoMessage) message;
-            if ((identifier != null) && (request.getIdentifier() != identifier)) {
+            if ((identifier >= 0) && (request.getIdentifier() != identifier)) {
                 return false;
             }
             if ((sequenceNumber != null) && (request.getSequenceNumber() != sequenceNumber)) {
@@ -79,7 +104,7 @@ public class Icmp4EchoFingerprint extends Fingerprint {
             }
         } else if (message instanceof Icmp4EchoReplyMessage) {
             Icmp4EchoReplyMessage reply = (Icmp4EchoReplyMessage) message;
-            if ((identifier != null) && (reply.getIdentifier() != identifier)) {
+            if ((identifier >= 0) && (reply.getIdentifier() != identifier)) {
                 return false;
             }
             if ((sequenceNumber != null) && (reply.getSequenceNumber() != sequenceNumber)) {
@@ -96,5 +121,14 @@ public class Icmp4EchoFingerprint extends Fingerprint {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public final Matcher createMatcher() {
+        Matcher identMatcher = null;
+        if (identifier == IDENT_FIXED) {
+            identMatcher = new Icmp4EchoFixedIdentifierMatcher();
+        }
+        return new Icmp4EchoMatcher(identMatcher);
     }
 }
